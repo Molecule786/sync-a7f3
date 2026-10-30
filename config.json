@@ -1,0 +1,13 @@
+{
+  "supabase_url": "https://lojwkfaebvzwizxfzixo.supabase.co",
+  "country": "US",
+  "city": "New York",
+  "city_slug": "new-york",
+  "region": "NY",
+  "limit": 10,
+  "days_ahead": 7,
+  "studios": [
+    "https://classpass.com/studios/barrys-upper-west-side-new-york",
+    "https://classpass.com/studios/barrys-chelsea-new-york"
+  ]
+}

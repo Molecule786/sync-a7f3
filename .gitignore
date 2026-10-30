@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+output/
+.env
+*.html
+*.png
+existing_events.sql
+structured_source.json
+inspect_source.py
