@@ -1,10 +1,11 @@
 import copy
 import json
 import unittest
+from unittest.mock import patch, Mock
 from datetime import datetime, timezone
 from pathlib import Path
 
-from collector import CollectionError, parse_schedule, timestamp
+from collector import CollectionError, parse_schedule, timestamp, write_batch
 
 
 class ParserTests(unittest.TestCase):
@@ -47,6 +48,18 @@ class ParserTests(unittest.TestCase):
 
     def test_blocked_page_is_not_an_empty_success(self):
         with self.assertRaises(CollectionError):parse_schedule('<h1>Access denied</h1>',self.config,self.now)
+
+    @patch.dict('os.environ', {'SUPABASE_SECRET_KEY':'test-placeholder'})
+    @patch('collector.requests.post')
+    def test_explicit_database_target(self, post):
+        rows = self.parse(self.event)
+        post.return_value = Mock(status_code=200)
+        for production, target, rpc in [(False,'classpass_events_test','sync_classpass_test'),(True,'events','sync_classpass_events')]:
+            post.return_value.json.return_value={'processed':len(rows),'target':target}
+            write_batch(self.config,rows,production=production)
+            self.assertTrue(post.call_args.args[0].endswith('/rpc/'+rpc))
+        post.return_value.json.return_value={'processed':len(rows),'target':'wrong_table'}
+        with self.assertRaises(CollectionError):write_batch(self.config,rows,production=True)
 
 
 if __name__=='__main__': unittest.main()

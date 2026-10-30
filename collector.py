@@ -116,7 +116,7 @@ def collect(config, now=None):
     return rows[:config['limit']]
 
 
-def write_test(config, rows):
+def write_batch(config, rows, production=False):
     secret = os.environ.get('SUPABASE_SECRET_KEY')
     if not secret:
         raise CollectionError('SUPABASE_SECRET_KEY is missing')
@@ -125,21 +125,24 @@ def write_test(config, rows):
     if secret.startswith('eyJ'):
         headers['Authorization'] = 'Bearer ' + secret
     response = requests.post(
-        config['supabase_url'].rstrip('/') + '/rest/v1/rpc/sync_classpass_test',
+        config['supabase_url'].rstrip('/') + '/rest/v1/rpc/' + ('sync_classpass_events' if production else 'sync_classpass_test'),
         headers=headers, json={'p_rows': rows}, timeout=30,
     )
     if response.status_code != 200:
         # Never echo headers, keys or arbitrary server response bodies into Actions logs.
-        raise CollectionError(f'Test database merge failed (HTTP {response.status_code})')
+        raise CollectionError(f'Database merge failed (HTTP {response.status_code})')
     result = response.json()
-    if not isinstance(result, dict) or result.get('processed') != len(rows):
+    target = 'events' if production else 'classpass_events_test'
+    if not isinstance(result, dict) or result.get('processed') != len(rows) or result.get('target') != target:
         raise CollectionError('Database did not confirm the full batch')
     return result
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--write-test', action='store_true')
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument('--write-test', action='store_true')
+    mode.add_argument('--write-production', action='store_true')
     args = parser.parse_args()
     config = json.loads(Path('config.json').read_text())
     output = Path('output')
@@ -147,7 +150,7 @@ def main():
     try:
         rows = collect(config)
         (output / 'preview.json').write_text(json.dumps(rows, indent=2), encoding='utf-8')
-        result = write_test(config, rows) if args.write_test else {'mode': 'preview'}
+        result = write_batch(config, rows, production=args.write_production) if (args.write_test or args.write_production) else {'mode': 'preview'}
         summary = {'status': 'success', 'verified_rows': len(rows), **result,
                    'finished_at': datetime.now(timezone.utc).isoformat(),
                    'coverage': 'Pilot: current public schedule from two configured NYC studios; not all NYC or all seven days'}
