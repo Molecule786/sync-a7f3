@@ -1,0 +1,40 @@
+name: ClassPass pilot
+on:
+  workflow_dispatch:
+    inputs:
+      write_test:
+        description: Write verified classes to the isolated Supabase test table
+        type: boolean
+        default: false
+permissions:
+  contents: read
+concurrency:
+  group: classpass-pilot
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python -m unittest -v
+      - name: Collect public schedule preview
+        if: ${{ !inputs.write_test }}
+        run: python collector.py
+      - name: Collect and merge into isolated test table
+        if: ${{ inputs.write_test }}
+        env:
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: python collector.py --write-test
+      - name: Save run results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: classpass-pilot-${{ github.run_id }}
+          path: output/
+          retention-days: 7
