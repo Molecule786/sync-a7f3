@@ -2,6 +2,9 @@
 import json
 import os
 import time
+import base64
+import gzip
+import io
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from email.utils import parsedate_to_datetime
@@ -11,6 +14,33 @@ from collector import CollectionError
 from enrichment import compact_checkpoint
 
 VERSION = 2
+CHECKPOINT_LIMIT = 8*1024*1024
+
+
+def pack_checkpoint(snapshot):
+    data=json.dumps(compact_checkpoint(snapshot),ensure_ascii=False).encode('utf8')
+    if len(data)>CHECKPOINT_LIMIT:raise CollectionError('Checkpoint exceeds stage budget; reduce batch scope')
+    if len(data)<65536:return json.loads(data)
+    header={k:snapshot[k] for k in ['version','market_id','window_start','window_end','status',
+            'retryable','retry_not_before','saved_at','summary'] if k in snapshot}
+    return {**header,'compression':'gzip+base64','uncompressed_bytes':len(data),
+            'compressed_payload':base64.b64encode(gzip.compress(data,mtime=0)).decode('ascii')}
+
+
+def unpack_checkpoint(value):
+    if not value or 'compression' not in value:return value
+    try:
+        if value['compression']!='gzip+base64':raise ValueError()
+        compressed=base64.b64decode(value['compressed_payload'],validate=True)
+        with gzip.GzipFile(fileobj=io.BytesIO(compressed)) as stream:
+            raw=stream.read(CHECKPOINT_LIMIT+1)
+        if len(raw)>CHECKPOINT_LIMIT or len(raw)!=value['uncompressed_bytes']:raise ValueError()
+        decoded=json.loads(raw)
+        for key in ['version','market_id','window_start','status']:
+            if decoded.get(key)!=value.get(key):raise ValueError()
+        return decoded
+    except (ValueError,KeyError,TypeError,OSError,EOFError):
+        raise CollectionError('Saved checkpoint failed integrity validation') from None
 
 
 def retry_delay(value, now):
@@ -79,13 +109,13 @@ class CheckpointStore:
 
     def load(self):
         if self.remote:
-            return rpc('classpass_checkpoint_read', {'p_market_id': self.market_id})
+            return unpack_checkpoint(rpc('classpass_checkpoint_read', {'p_market_id': self.market_id}))
         path = self.root / 'checkpoint.json'
-        return json.loads(path.read_text()) if path.exists() else None
+        return unpack_checkpoint(json.loads(path.read_text(encoding='utf8'))) if path.exists() else None
 
     def save(self, snapshot):
         # One bounded snapshot per currently enabled market, overwritten in place.
-        snapshot=compact_checkpoint(snapshot)
+        snapshot=pack_checkpoint(snapshot)
         encoded = json.dumps(snapshot)
         if len(encoded.encode('utf8')) > 8 * 1024 * 1024:
             raise CollectionError('Checkpoint exceeds stage budget; reduce batch scope')

@@ -6,7 +6,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from collector import CollectionError
-from sync_state import CheckpointStore, RetryableError, retry_due, usable, retry_delay, VERSION
+from sync_state import CheckpointStore, RetryableError, retry_due, usable, retry_delay, VERSION,pack_checkpoint,unpack_checkpoint
 from us_collector import collect_market, PublicClient, main
 
 
@@ -34,6 +34,23 @@ class ReliabilityTests(unittest.TestCase):
         self.assertEqual(retry_delay('7200',self.now),7200)
         self.assertEqual(retry_delay('Sun, 01 Nov 2026 06:00:00 GMT',self.now),7201)
         self.assertIsNone(retry_delay('not a date',self.now))
+
+    def test_large_checkpoint_transfers_compressed_without_losing_data(self):
+        snapshot=self.snapshot()
+        snapshot['source_data']={'unknown_source_field':'Repeated public description '*20000}
+        packed=pack_checkpoint(snapshot)
+        self.assertEqual(packed['compression'],'gzip+base64')
+        self.assertLess(len(json.dumps(packed)),len(json.dumps(snapshot))//10)
+        self.assertEqual(unpack_checkpoint(packed),snapshot)
+
+    def test_corrupt_or_mismatched_checkpoint_is_rejected(self):
+        snapshot=self.snapshot(source_data='x'*100000)
+        packed=pack_checkpoint(snapshot)
+        packed['market_id']=45
+        with self.assertRaises(CollectionError):unpack_checkpoint(packed)
+        packed=pack_checkpoint(snapshot)
+        packed['compressed_payload']='invalid'
+        with self.assertRaises(CollectionError):unpack_checkpoint(packed)
 
     def test_partial_collection_exits_nonzero(self):
         with patch('sys.argv',['us_collector.py','--market','50']), \
