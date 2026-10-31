@@ -8,6 +8,7 @@ from email.utils import parsedate_to_datetime
 
 from curl_cffi import requests
 from collector import CollectionError
+from enrichment import compact_checkpoint
 
 VERSION = 2
 
@@ -84,6 +85,7 @@ class CheckpointStore:
 
     def save(self, snapshot):
         # One bounded snapshot per currently enabled market, overwritten in place.
+        snapshot=compact_checkpoint(snapshot)
         encoded = json.dumps(snapshot)
         if len(encoded.encode('utf8')) > 8 * 1024 * 1024:
             raise CollectionError('Checkpoint exceeds stage budget; reduce batch scope')

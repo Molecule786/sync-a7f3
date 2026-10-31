@@ -21,6 +21,53 @@ def activities(value):
     return value if isinstance(value,list) else []
 
 
+def class_details(cls):
+    return {'name':cls.get('name'),'description':cls.get('description'),
+            'activities':activities(cls.get('activities')),'level':cls.get('level'),
+            'ratings':cls.get('ratings'),'images':cls.get('images'),
+            'how_to_get_there':cls.get('how_to_get_there'),'what_to_bring':cls.get('what_to_bring')}
+
+
+def session_details(item, observed_at):
+    teacher=item.get('teacher') or {}
+    return {'teacher':teacher,'instructor_name':item.get('teacher_name') or teacher.get('name'),
+            'instructor_id':teacher.get('id'),'duration_minutes':item.get('duration_minutes'),
+            'is_livestream':item.get('is_livestream'),'retail_price_in_credits':item.get('retail_price_in_credits'),
+            'availability':item.get('availability'),'availability_observed_at':observed_at,
+            'cancellation_policy_source_code':item.get('cancellation_policy'),
+            'late_cancellation_source_value':item.get('late_cancellation'),
+            'tag_ids':item.get('tag_ids'),'demand_signals':item.get('demand_signals'),
+            'location_override':item.get('location_override')}
+
+
+def compact_checkpoint(snapshot):
+    if 'enrichment' not in snapshot:return snapshot
+    result=dict(snapshot)
+    result['enrichment']={kind:{key:{k:v for k,v in record.items() if k!='details'}
+                              for key,record in records.items()}
+                          for kind,records in snapshot['enrichment'].items()}
+    result['tasks']={key:{**task,'rows':[{k:v for k,v in row.items() if k!='description'}
+                                        for row in task['rows']]}
+                     for key,task in snapshot.get('tasks',{}).items()}
+    return result
+
+
+def restore_checkpoint(snapshot):
+    state=snapshot.get('enrichment')
+    if not state:return
+    for key,record in list(state['studios'].items()):
+        state['studios'][key]=studio_record(record['studio_id'],previous=record)
+    for record in state['classes'].values():record['details']=class_details(record['raw_class'])
+    for record in state['sessions'].values():
+        record['details']=session_details(record['raw_session'],record['observed_at'])
+    for task in snapshot.get('tasks',{}).values():
+        for row in task['rows']:
+            session=state['sessions'].get(row['event_id'])
+            if session:
+                cls=state['classes'][f"{session['studio_id']}:{session['class_id']}"]['raw_class']
+                if cls.get('description') is not None:row['description']=cls['description']
+
+
 def studio_record(identity, directory=None, schedule=None, profile=None, checked_at=None, previous=None):
     record=dict(previous or {})
     record['studio_id']=identity
@@ -61,10 +108,7 @@ def capture(item, row, state, profile_cache, checked_times, observed_at):
         previous=state['studios'].get(key))
     class_key=f'{vid}:{cid}'
     state['classes'][class_key]={'studio_id':vid,'class_id':cid,'raw_class':cls,
-        'details':{'name':cls.get('name'),'description':cls.get('description'),
-                   'activities':activities(cls.get('activities')),'level':cls.get('level'),
-                   'ratings':cls.get('ratings'),'images':cls.get('images'),
-                   'how_to_get_there':cls.get('how_to_get_there'),'what_to_bring':cls.get('what_to_bring')}}
+        'details':class_details(cls)}
     teacher=item.get('teacher') or {}
     details={'teacher':teacher,'instructor_name':item.get('teacher_name') or teacher.get('name'),
              'instructor_id':teacher.get('id'),'duration_minutes':item.get('duration_minutes'),

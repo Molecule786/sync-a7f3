@@ -14,7 +14,7 @@ from bs4 import BeautifulSoup
 from curl_cffi import requests
 
 from collector import CollectionError
-from enrichment import capture, studio_record, bundle
+from enrichment import capture, studio_record, bundle, restore_checkpoint
 from sync_state import CheckpointStore, RetryableError, VERSION, usable, retry_due, retry_delay, rpc
 
 ORIGIN = 'https://classpass.com'
@@ -244,6 +244,7 @@ def collect_market(market, root, sample=False, max_requests=5000, store=None, sn
                   'window_end':(now+timedelta(days=7)).isoformat(),'tasks':{},'status':'running'}
     started=datetime.fromisoformat(snapshot['window_start'])
     cutoff=datetime.fromisoformat(snapshot['window_end'])
+    restore_checkpoint(snapshot)
     client=PublicClient(max_requests=max_requests)
     state=snapshot.setdefault('enrichment',{'studios':{},'classes':{},'sessions':{}})
     checked_times={}
@@ -323,6 +324,7 @@ def collect_market(market, root, sample=False, max_requests=5000, store=None, sn
         if not all_rows and (summary['excluded'].get('unknown_geography') or summary['excluded'].get('missing_required_fields')):
             raise CollectionError('No sessions could be verified; unresolved source fields')
         detail_error=None
+        profiles_since_checkpoint=0
         for key,record in list(state['studios'].items()):
             if record.get('raw_profile'):continue
             if client.count>=max_requests-5 or time.monotonic()>=getattr(client,'deadline',float('inf'))-10:
@@ -333,7 +335,8 @@ def collect_market(market, root, sample=False, max_requests=5000, store=None, sn
                 if profile.get('id')!=vid:raise CollectionError('Studio detail identity mismatch')
                 client.venue_cache[vid]=profile
                 state['studios'][key]=studio_record(vid,profile=profile,checked_at=utcnow().isoformat(),previous=record)
-                persist()
+                profiles_since_checkpoint+=1
+                if profiles_since_checkpoint%10==0:persist()
             except CollectionError as exc:
                 detail_error=exc;break
         pending=sum(not bool(v.get('raw_profile')) for v in state['studios'].values())

@@ -1,5 +1,10 @@
 import unittest
-from enrichment import capture, studio_record, bundle
+import tempfile
+import copy,json
+from unittest.mock import patch,Mock
+from datetime import datetime,timezone
+from enrichment import capture, studio_record, bundle,compact_checkpoint,restore_checkpoint
+from us_collector import collect_market
 
 
 class EnrichmentTests(unittest.TestCase):
@@ -60,3 +65,42 @@ class EnrichmentTests(unittest.TestCase):
     def test_class_identity_required(self):
         self.item['class'].pop('id')
         with self.assertRaises(ValueError):capture(self.item,self.row,self.state,{}, {},self.when)
+
+    def test_compact_checkpoint_roundtrip_keeps_all_source_fields_and_observation_times(self):
+        capture(self.item,self.row,self.state,{}, {},self.when)
+        row={**self.row,'description':'Class description'}
+        original={'enrichment':self.state,'tasks':{'0':{'rows':[row],'pages':1,'excluded':{}}}}
+        expected=copy.deepcopy(original)
+        compact=json.loads(json.dumps(compact_checkpoint(original)))
+        self.assertNotIn('details',compact['enrichment']['sessions']['classpass:100'])
+        self.assertNotIn('description',compact['tasks']['0']['rows'][0])
+        self.assertEqual(original,expected)
+        restore_checkpoint(compact)
+        self.assertEqual(compact,expected)
+
+    def test_profiles_checkpoint_in_groups_and_budget_shortfall_is_retryable(self):
+        class Client:
+            def __init__(self,count):self.count=count;self.venue_cache={}
+            def json(self,method,path):
+                self.count+=1
+                return {'id':int(path.rsplit('/',1)[1]),'name':'Public studio'}
+        market={'id':50,'name':'Missoula','timezone':'America/Denver'}
+        venues=[{'id':i} for i in range(1,21)]
+        now=datetime(2026,11,1,4,tzinfo=timezone.utc)
+        for count in [0,146]:
+            with self.subTest(count=count),tempfile.TemporaryDirectory() as root, \
+                 patch('us_collector.utcnow',return_value=now), \
+                 patch('us_collector.PublicClient',return_value=Client(count)), \
+                 patch('us_collector.discover',return_value=(venues,{'directory_complete':True,'excluded_non_us_or_unknown':0})), \
+                 patch('us_collector.schedule_pages',return_value=[[]]),patch('builtins.print'):
+                store=Mock()
+                summary,_,snapshot=collect_market(market,root,max_requests=150,store=store)
+                if count==0:
+                    self.assertEqual(summary['detail_profiles_pending'],0)
+                    self.assertEqual(summary['status'],'complete')
+                    self.assertLessEqual(store.save.call_count,14)
+                else:
+                    self.assertEqual(summary['status'],'partial')
+                    self.assertEqual(summary['detail_profiles_pending'],20)
+                    self.assertTrue(summary['retryable'])
+                    self.assertTrue(snapshot['retryable'])
