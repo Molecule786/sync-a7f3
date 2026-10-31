@@ -42,6 +42,19 @@ class ReliabilityTests(unittest.TestCase):
             with self.assertRaises(SystemExit) as result:main()
             self.assertEqual(result.exception.code,2)
 
+    def test_manual_refresh_discards_nonretryable_partial_snapshot(self):
+        class Client:
+            count=0
+            venue_cache={}
+        saved=self.snapshot(status='partial',retryable=False)
+        with tempfile.TemporaryDirectory() as directory, \
+             patch('us_collector.utcnow',return_value=self.now), \
+             patch('us_collector.PublicClient',return_value=Client()), \
+             patch('us_collector.discover',return_value=([],{'directory_complete':True,'excluded_non_us_or_unknown':0})) as discover:
+            summary,_,_=collect_market(self.market,directory,snapshot=saved)
+            self.assertFalse(summary['resumed'])
+            self.assertEqual(discover.call_count,1)
+
     def test_interrupted_task_resumes_without_refetching_completed_tasks(self):
         class Client:
             count=0

@@ -66,10 +66,10 @@ class PublicClient:
             if r.status_code in (401,403):
                 raise CollectionError(f'Source denied access (HTTP {r.status_code}); no retry')
             if r.status_code==429 or r.status_code>=500:
-                if attempt==2:break
                 retry=retry_delay(r.headers.get('Retry-After',''),utcnow())
                 if retry is not None and retry>60:
                     raise RetryableError('Source requested long cooldown; coverage incomplete',retry)
+                if attempt==2:break
                 time.sleep(retry if retry is not None else 5*(attempt+1))
                 continue
             break
@@ -236,7 +236,8 @@ def schedule_pages(client, ids, day):
 def collect_market(market, root, sample=False, max_requests=5000, store=None, snapshot=None):
     root=Path(root);root.mkdir(exist_ok=True,parents=True)
     now=utcnow()
-    resumed=usable(snapshot,market['id'],now) and snapshot.get('status')!='complete'
+    resumed=(usable(snapshot,market['id'],now) and snapshot.get('status')!='complete'
+             and snapshot.get('retryable') is not False)
     if not resumed:
         snapshot={'version':VERSION,'market_id':market['id'],'window_start':now.isoformat(),
                   'window_end':(now+timedelta(days=7)).isoformat(),'tasks':{},'status':'running'}
