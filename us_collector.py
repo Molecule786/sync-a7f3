@@ -14,6 +14,7 @@ from bs4 import BeautifulSoup
 from curl_cffi import requests
 
 from collector import CollectionError
+from sync_state import CheckpointStore, RetryableError, VERSION, usable, retry_due, retry_delay
 
 ORIGIN = 'https://classpass.com'
 STATES = set('AL AK AZ AR CA CO CT DE FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY DC PR VI GU AS MP'.split())
@@ -43,29 +44,38 @@ class PublicClient:
         self.delay, self.max_requests = delay,max_requests
         self.count, self.last = 0,0
         self.venue_cache = {}
+        self.deadline = time.monotonic()+240
 
     def request(self, method, path, **kwargs):
         url = path if path.startswith('https://') else ORIGIN+path
         if urlparse(url).hostname != 'classpass.com':
             raise CollectionError('Unexpected source host')
         for attempt in range(3):
+            if time.monotonic() >= self.deadline:
+                raise RetryableError('Run time budget reached; resume saved tasks on retry')
             if self.count >= self.max_requests:
-                raise CollectionError('Request budget reached; coverage incomplete')
+                raise RetryableError('Request budget reached; coverage incomplete')
             time.sleep(max(0,self.delay-(time.monotonic()-self.last)))
             self.count += 1
-            r=self.session.request(method,url,headers={'platform':'web'},impersonate='chrome',timeout=45,**kwargs)
+            try:
+                r=self.session.request(method,url,headers={'platform':'web'},impersonate='chrome',timeout=30,**kwargs)
+            except requests.RequestsError:
+                if attempt==2:raise RetryableError('Source transport failed') from None
+                time.sleep(5*(attempt+1));continue
             self.last=time.monotonic()
             if r.status_code in (401,403):
                 raise CollectionError(f'Source denied access (HTTP {r.status_code}); no retry')
             if r.status_code==429 or r.status_code>=500:
                 if attempt==2:break
-                retry=r.headers.get('Retry-After','')
-                if retry.isdigit() and int(retry)>60:
-                    raise CollectionError('Source requested long cooldown; coverage incomplete')
-                time.sleep(int(retry) if retry.isdigit() else 5*(attempt+1))
+                retry=retry_delay(r.headers.get('Retry-After',''),utcnow())
+                if retry is not None and retry>60:
+                    raise RetryableError('Source requested long cooldown; coverage incomplete',retry)
+                time.sleep(retry if retry is not None else 5*(attempt+1))
                 continue
             break
         if r.status_code != 200:
+            if r.status_code==429 or r.status_code>=500:
+                raise RetryableError(f'Source HTTP {r.status_code}')
             raise CollectionError(f'Source HTTP {r.status_code}')
         return r
 
@@ -223,15 +233,33 @@ def schedule_pages(client, ids, day):
         response=client.json('GET','/_api/v3/search/schedules',params={'cursor':cursor})
 
 
-def collect_market(market, root, sample=False, max_requests=5000):
+def collect_market(market, root, sample=False, max_requests=5000, store=None, snapshot=None):
     root=Path(root);root.mkdir(exist_ok=True,parents=True)
-    started=utcnow();cutoff=started+timedelta(days=7)
+    now=utcnow()
+    resumed=usable(snapshot,market['id'],now) and snapshot.get('status')!='complete'
+    if not resumed:
+        snapshot={'version':VERSION,'market_id':market['id'],'window_start':now.isoformat(),
+                  'window_end':(now+timedelta(days=7)).isoformat(),'tasks':{},'status':'running'}
+    started=datetime.fromisoformat(snapshot['window_start'])
+    cutoff=datetime.fromisoformat(snapshot['window_end'])
     client=PublicClient(max_requests=max_requests)
-    summary={'market_id':market['id'],'market':market['name'],'status':'running','window_start':started.isoformat(),'window_end':cutoff.isoformat(),'coverage':'US fitness directory search footprint; seven-day rolling schedule window','pages':0,'verified_rows':0,'excluded':{}}
+    summary={'market_id':market['id'],'market':market['name'],'country':'US','status':'running',
+             'window_start':started.isoformat(),'window_end':cutoff.isoformat(),
+             'coverage':'Staged US market footprint only; country coverage incomplete',
+             'resumed':resumed,'pages':0,'verified_rows':0,'excluded':{}}
+    def persist():
+        snapshot['summary']=summary
+        snapshot['saved_at']=utcnow().isoformat()
+        if store:store.save(snapshot)
+    snapshot.update(status='running',retryable=True)
     all_rows={}
     try:
-        venues,coverage=discover(client,market,root,sample_pages=2 if sample else 0)
-        summary.update(coverage)
+        persist()
+        if 'venues' not in snapshot:
+            venues,coverage=discover(client,market,root,sample_pages=2 if sample else 0)
+            snapshot.update(venues=venues,coverage=coverage)
+            persist()
+        venues=snapshot['venues'];summary.update(snapshot['coverage'])
         tz=ZoneInfo(market['timezone'])
         day=started.astimezone(tz).date();last=(cutoff-timedelta(microseconds=1)).astimezone(tz).date()
         dates=[]
@@ -240,19 +268,34 @@ def collect_market(market, root, sample=False, max_requests=5000):
         summary['expected_tasks']=len(tasks);summary['completed_tasks']=0
         for index,(date,chunk) in enumerate(tasks):
             if sample and index>=2:break
-            for items in schedule_pages(client,[v['id'] for v in chunk],date):
-                summary['pages']+=1
-                for item in items:
-                    item=dict(item)
-                    item['venue']=enrich_venue(client,item.get('venue') or {})
-                    row,reason=parse_session(item,started,cutoff)
-                    if row:all_rows[row['event_id']]=row
-                    else:summary['excluded'][reason]=summary['excluded'].get(reason,0)+1
-                save(root/'events.json',list(all_rows.values()))
-            summary['completed_tasks']+=1
+            task_key=str(index)
+            cached=snapshot['tasks'].get(task_key)
+            if cached is None:
+                task_rows={};excluded={};pages=0
+                for items in schedule_pages(client,[v['id'] for v in chunk],date):
+                    pages+=1
+                    for item in items:
+                        item=dict(item)
+                        item['venue']=enrich_venue(client,item.get('venue') or {})
+                        row,reason=parse_session(item,started,cutoff)
+                        if row:
+                            row['_observed_at']=utcnow().isoformat()
+                            task_rows[row['event_id']]=row
+                        else:excluded[reason]=excluded.get(reason,0)+1
+                # Only checkpoint fully enumerated tasks. Failed cursor tasks restart safely.
+                cached={'rows':list(task_rows.values()),'excluded':excluded,'pages':pages,
+                        'observed_at':utcnow().isoformat()}
+                snapshot['tasks'][task_key]=cached
+            for row in cached['rows']:all_rows[row['event_id']]=row
+            for reason,count in cached['excluded'].items():
+                summary['excluded'][reason]=summary['excluded'].get(reason,0)+count
+            summary['pages']+=cached['pages'];summary['completed_tasks']+=1
             summary['verified_rows']=len(all_rows)
+            save(root/'events.json',list(all_rows.values()))
             save(root/'summary.json',summary)
-            print(json.dumps({'market_id':market['id'],'task':index+1,'tasks':len(tasks),'rows':len(all_rows),'requests':client.count}),flush=True)
+            persist()
+            print(json.dumps({'market_id':market['id'],'task':index+1,'tasks':len(tasks),
+                              'rows':len(all_rows),'requests':client.count}),flush=True)
         complete=(summary['directory_complete'] and summary['completed_tasks']==len(tasks)
                   and not summary['excluded_non_us_or_unknown']
                   and not summary['excluded'].get('unknown_geography')
@@ -261,12 +304,21 @@ def collect_market(market, root, sample=False, max_requests=5000):
             raise CollectionError('No sessions could be verified; unresolved source fields')
         summary.update(status='complete' if complete else 'partial',verified_rows=len(all_rows),requests=client.count,
                        venue_details_consulted=len(client.venue_cache),finished_at=utcnow().isoformat())
+        # Remains collected until all database batches succeed.
+        snapshot.update(status='collected',retryable=complete)
+        persist()
     except Exception as exc:
-        summary.update(status='failed',error=str(exc) if isinstance(exc,CollectionError) else type(exc).__name__,verified_rows=len(all_rows),requests=client.count,finished_at=utcnow().isoformat())
+        summary.update(status='failed',error=str(exc) if isinstance(exc,CollectionError) else type(exc).__name__,
+                       verified_rows=len(all_rows),requests=client.count,finished_at=utcnow().isoformat())
+        snapshot.update(status='failed',retryable=isinstance(exc,RetryableError))
+        if isinstance(exc,RetryableError) and exc.cooldown:
+            snapshot['retry_not_before']=(utcnow()+timedelta(seconds=exc.cooldown)).isoformat()
         save(root/'summary.json',summary)
+        try:persist()
+        except CollectionError:pass  # The original error and previous durable checkpoint remain authoritative.
         raise
     save(root/'summary.json',summary)
-    return summary,list(all_rows.values())
+    return summary,list(all_rows.values()),snapshot
 
 
 def main():
@@ -275,24 +327,51 @@ def main():
     parser.add_argument('--sample',action='store_true')
     parser.add_argument('--max-requests',type=int,default=5000)
     parser.add_argument('--write-production',action='store_true')
+    parser.add_argument('--retry-only',action='store_true')
     args=parser.parse_args()
     market=next(m for m in MARKETS if m['id']==args.market)
     root=Path('output')/f"market-{args.market}"
     if args.sample and args.write_production:
         parser.error('Sample collection cannot write production')
-    summary,rows=collect_market(market,root,args.sample,args.max_requests)
+    store=CheckpointStore(market['id'],root,remote=args.write_production)
+    snapshot=store.load() if args.write_production and not args.sample else None
+    if args.retry_only and not args.write_production:
+        parser.error('Retry-only requires production checkpoint access')
+    cooldown=snapshot and snapshot.get('retry_not_before')
+    if cooldown and utcnow()<datetime.fromisoformat(cooldown):
+        summary={'status':'skipped','market_id':market['id'],'reason':'Source cooldown active','retry_not_before':cooldown}
+        save(root/'summary.json',summary);print(json.dumps(summary));return
+    if args.retry_only and not retry_due(snapshot,market['id'],utcnow()):
+        summary={'status':'skipped','market_id':market['id'],
+                 'reason':'No recent retryable unfinished collection, or cooldown still active'}
+        save(root/'summary.json',summary)
+        print(json.dumps(summary));return
+    summary,rows,snapshot=collect_market(market,root,args.sample,args.max_requests,store,snapshot)
     if args.write_production:
         summary['collection_status']=summary['status']
         try:
             result=write_us(market,summary,rows)
             summary['database']=result
+            snapshot.update(status=summary['collection_status'],retryable=False)
+            snapshot['summary']=summary
+            finished_snapshot=dict(snapshot)
+            if snapshot['status']=='complete':
+                finished_snapshot.pop('tasks',None);finished_snapshot.pop('venues',None)
+            store.save(finished_snapshot)
+            snapshot=finished_snapshot
         except Exception as exc:
             summary['status']='failed'
             summary['database']={'status':'failed','error':str(exc) if isinstance(exc,CollectionError) else type(exc).__name__}
             save(root/'summary.json',summary)
+            snapshot.update(status='failed',retryable=isinstance(exc,RetryableError))
+            snapshot['summary']=summary
+            try:store.save(snapshot)
+            except CollectionError:pass
             raise
         save(root/'summary.json',summary)
     print(json.dumps(summary))
+    if summary['status']!='complete':
+        raise SystemExit(2)  # Partial source coverage must not produce a green workflow.
 
 
 def write_us(market,summary,rows):
@@ -314,14 +393,17 @@ def write_us(market,summary,rows):
             try:
                 response=requests.post(config['supabase_url'].rstrip('/')+'/rest/v1/rpc/sync_classpass_us',json=payload,headers=headers,timeout=60)
             except requests.RequestsError:
-                if attempt==2:raise CollectionError('Database request failed; partial writes may exist')
+                if attempt==2:raise RetryableError('Database request failed; partial writes may exist')
                 time.sleep(2*(attempt+1));continue
             if response.status_code>=500 and attempt<2:time.sleep(2*(attempt+1));continue
             break
-        if response.status_code!=200:raise CollectionError(f'US database merge HTTP {response.status_code}; partial writes may exist')
+        if response.status_code!=200:
+            error=RetryableError if response.status_code>=500 or response.status_code==429 else CollectionError
+            raise error(f'US database merge HTTP {response.status_code}; partial writes may exist')
         out=response.json()
         if out.get('target')!='events' or out.get('processed')!=len(chunk):raise CollectionError('Database batch confirmation mismatch')
         for field in ['inserted','updated','processed']:result[field]+=out[field]
+        result['unchanged']=result.get('unchanged',0)+out.get('unchanged',0)
     return result
 
 
