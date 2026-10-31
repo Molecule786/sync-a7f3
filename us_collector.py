@@ -14,7 +14,8 @@ from bs4 import BeautifulSoup
 from curl_cffi import requests
 
 from collector import CollectionError
-from sync_state import CheckpointStore, RetryableError, VERSION, usable, retry_due, retry_delay
+from enrichment import capture, studio_record, bundle
+from sync_state import CheckpointStore, RetryableError, VERSION, usable, retry_due, retry_delay, rpc
 
 ORIGIN = 'https://classpass.com'
 STATES = set('AL AK AZ AR CA CO CT DE FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY DC PR VI GU AS MP'.split())
@@ -233,7 +234,7 @@ def schedule_pages(client, ids, day):
         response=client.json('GET','/_api/v3/search/schedules',params={'cursor':cursor})
 
 
-def collect_market(market, root, sample=False, max_requests=5000, store=None, snapshot=None):
+def collect_market(market, root, sample=False, max_requests=5000, store=None, snapshot=None, cached_profiles=None):
     root=Path(root);root.mkdir(exist_ok=True,parents=True)
     now=utcnow()
     resumed=(usable(snapshot,market['id'],now) and snapshot.get('status')!='complete'
@@ -244,6 +245,15 @@ def collect_market(market, root, sample=False, max_requests=5000, store=None, sn
     started=datetime.fromisoformat(snapshot['window_start'])
     cutoff=datetime.fromisoformat(snapshot['window_end'])
     client=PublicClient(max_requests=max_requests)
+    state=snapshot.setdefault('enrichment',{'studios':{},'classes':{},'sessions':{}})
+    checked_times={}
+    for item in cached_profiles or []:
+        vid=item['studio_id']
+        client.venue_cache[vid]=item['raw_profile'];checked_times[vid]=item['profile_checked_at']
+    for item in state['studios'].values():
+        if item.get('raw_profile'):
+            client.venue_cache[item['studio_id']]=item['raw_profile']
+            checked_times[item['studio_id']]=item.get('profile_checked_at')
     summary={'market_id':market['id'],'market':market['name'],'country':'US','status':'running',
              'window_start':started.isoformat(),'window_end':cutoff.isoformat(),
              'coverage':'Staged US market footprint only; country coverage incomplete',
@@ -261,6 +271,13 @@ def collect_market(market, root, sample=False, max_requests=5000, store=None, sn
             snapshot.update(venues=venues,coverage=coverage)
             persist()
         venues=snapshot['venues'];summary.update(snapshot['coverage'])
+        directory_path=root/'discovery.json'
+        raw_directory={v['id']:v for v in json.loads(directory_path.read_text(encoding='utf8'))['venues']} if directory_path.exists() else {}
+        for venue in venues:
+            vid=venue['id'];key=str(vid)
+            if key not in state['studios']:
+                state['studios'][key]=studio_record(vid,directory=raw_directory.get(vid,venue),profile=client.venue_cache.get(vid),
+                    checked_at=checked_times.get(vid,utcnow().isoformat()) if vid in client.venue_cache else None)
         tz=ZoneInfo(market['timezone'])
         day=started.astimezone(tz).date();last=(cutoff-timedelta(microseconds=1)).astimezone(tz).date()
         dates=[]
@@ -276,11 +293,13 @@ def collect_market(market, root, sample=False, max_requests=5000, store=None, sn
                 for items in schedule_pages(client,[v['id'] for v in chunk],date):
                     pages+=1
                     for item in items:
+                        source_item=dict(item)
                         item=dict(item)
                         item['venue']=enrich_venue(client,item.get('venue') or {})
                         row,reason=parse_session(item,started,cutoff)
                         if row:
                             row['_observed_at']=utcnow().isoformat()
+                            capture(source_item,row,state,client.venue_cache,checked_times,row['_observed_at'])
                             task_rows[row['event_id']]=row
                         else:excluded[reason]=excluded.get(reason,0)+1
                 # Only checkpoint fully enumerated tasks. Failed cursor tasks restart safely.
@@ -303,10 +322,33 @@ def collect_market(market, root, sample=False, max_requests=5000, store=None, sn
                   and not summary['excluded'].get('missing_required_fields'))
         if not all_rows and (summary['excluded'].get('unknown_geography') or summary['excluded'].get('missing_required_fields')):
             raise CollectionError('No sessions could be verified; unresolved source fields')
+        detail_error=None
+        for key,record in list(state['studios'].items()):
+            if record.get('raw_profile'):continue
+            if client.count>=max_requests-5 or time.monotonic()>=getattr(client,'deadline',float('inf'))-10:
+                break
+            try:
+                vid=record['studio_id']
+                profile=client.json('GET',f'/_api/v2/venues/{vid}')
+                if profile.get('id')!=vid:raise CollectionError('Studio detail identity mismatch')
+                client.venue_cache[vid]=profile
+                state['studios'][key]=studio_record(vid,profile=profile,checked_at=utcnow().isoformat(),previous=record)
+                persist()
+            except CollectionError as exc:
+                detail_error=exc;break
+        pending=sum(not bool(v.get('raw_profile')) for v in state['studios'].values())
+        summary.update(detail_profiles_total=len(state['studios']),detail_profiles_pending=pending,
+                       detail_status='partial' if pending else 'complete')
+        if detail_error:summary['detail_error']=str(detail_error)
+        summary['retryable']=bool(complete and pending and (detail_error is None or isinstance(detail_error,RetryableError)))
+        if isinstance(detail_error,RetryableError) and detail_error.cooldown:
+            snapshot['retry_not_before']=(utcnow()+timedelta(seconds=detail_error.cooldown)).isoformat()
+        save(root/'enrichment.json',state)
+        complete=complete and not pending
         summary.update(status='complete' if complete else 'partial',verified_rows=len(all_rows),requests=client.count,
                        venue_details_consulted=len(client.venue_cache),finished_at=utcnow().isoformat())
         # Remains collected until all database batches succeed.
-        snapshot.update(status='collected',retryable=complete)
+        snapshot.update(status='collected',retryable=complete or summary['retryable'])
         persist()
     except Exception as exc:
         summary.update(status='failed',error=str(exc) if isinstance(exc,CollectionError) else type(exc).__name__,
@@ -347,17 +389,18 @@ def main():
                  'reason':'No recent retryable unfinished collection, or cooldown still active'}
         save(root/'summary.json',summary)
         print(json.dumps(summary));return
-    summary,rows,snapshot=collect_market(market,root,args.sample,args.max_requests,store,snapshot)
+    profiles=rpc('classpass_cached_profiles',{'p_market_id':market['id']}) if args.write_production else []
+    summary,rows,snapshot=collect_market(market,root,args.sample,args.max_requests,store,snapshot,profiles)
     if args.write_production:
         summary['collection_status']=summary['status']
         try:
-            result=write_us(market,summary,rows)
+            result=write_us(market,summary,rows,snapshot['enrichment'])
             summary['database']=result
-            snapshot.update(status=summary['collection_status'],retryable=False)
+            snapshot.update(status=summary['collection_status'],retryable=summary.get('retryable',False))
             snapshot['summary']=summary
             finished_snapshot=dict(snapshot)
             if snapshot['status']=='complete':
-                finished_snapshot.pop('tasks',None);finished_snapshot.pop('venues',None)
+                finished_snapshot.pop('tasks',None);finished_snapshot.pop('venues',None);finished_snapshot.pop('enrichment',None)
             store.save(finished_snapshot)
             snapshot=finished_snapshot
         except Exception as exc:
@@ -375,7 +418,7 @@ def main():
         raise SystemExit(2)  # Partial source coverage must not produce a green workflow.
 
 
-def write_us(market,summary,rows):
+def write_us(market,summary,rows,enrichment=None):
     secret=os.environ.get('SUPABASE_SECRET_KEY')
     if not secret:raise CollectionError('SUPABASE_SECRET_KEY missing')
     config=json.loads(Path(__file__).with_name('config.json').read_text())
@@ -390,9 +433,11 @@ def write_us(market,summary,rows):
     result={'inserted':0,'updated':0,'processed':0,'run_key':key}
     for index,chunk in enumerate(chunks):
         payload={'p_rows':chunk,'p_market_id':market['id'],'p_run_key':key,'p_batch':index,'p_final':index==len(chunks)-1,'p_stats':summary}
+        if enrichment is not None:payload['p_enrichment']=bundle(enrichment,chunk,include_all_studios=index==0)
+        endpoint='sync_classpass_enriched' if enrichment is not None else 'sync_classpass_us'
         for attempt in range(3):
             try:
-                response=requests.post(config['supabase_url'].rstrip('/')+'/rest/v1/rpc/sync_classpass_us',json=payload,headers=headers,timeout=60)
+                response=requests.post(config['supabase_url'].rstrip('/')+'/rest/v1/rpc/'+endpoint,json=payload,headers=headers,timeout=60)
             except requests.RequestsError:
                 if attempt==2:raise RetryableError('Database request failed; partial writes may exist')
                 time.sleep(2*(attempt+1));continue
@@ -402,9 +447,11 @@ def write_us(market,summary,rows):
             error=RetryableError if response.status_code>=500 or response.status_code==429 else CollectionError
             raise error(f'US database merge HTTP {response.status_code}; partial writes may exist')
         out=response.json()
+        if enrichment is not None and out.get('enriched')!=len(chunk):raise CollectionError('Enrichment confirmation mismatch')
         if out.get('target')!='events' or out.get('processed')!=len(chunk):raise CollectionError('Database batch confirmation mismatch')
         for field in ['inserted','updated','processed']:result[field]+=out[field]
         result['unchanged']=result.get('unchanged',0)+out.get('unchanged',0)
+        result['enriched']=result.get('enriched',0)+out.get('enriched',0)
     return result
 
 

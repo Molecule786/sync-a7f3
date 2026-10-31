@@ -9,7 +9,7 @@ from email.utils import parsedate_to_datetime
 from curl_cffi import requests
 from collector import CollectionError
 
-VERSION = 1
+VERSION = 2
 
 
 def retry_delay(value, now):

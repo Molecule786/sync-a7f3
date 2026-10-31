@@ -6,7 +6,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from collector import CollectionError
-from sync_state import CheckpointStore, RetryableError, retry_due, usable, retry_delay
+from sync_state import CheckpointStore, RetryableError, retry_due, usable, retry_delay, VERSION
 from us_collector import collect_market, PublicClient, main
 
 
@@ -16,7 +16,7 @@ class ReliabilityTests(unittest.TestCase):
         self.market = {'id': 50, 'name': 'Missoula', 'timezone': 'America/Denver'}
 
     def snapshot(self, **changes):
-        data = {'version': 1, 'market_id': 50, 'status': 'failed', 'retryable': True,
+        data = {'version': VERSION, 'market_id': 50, 'status': 'failed', 'retryable': True,
                 'window_start': self.now.isoformat()}
         data.update(changes)
         return data
@@ -46,6 +46,7 @@ class ReliabilityTests(unittest.TestCase):
         class Client:
             count=0
             venue_cache={}
+            def json(self,method,path):return {'id':int(path.rsplit('/',1)[1])}
         saved=self.snapshot(status='partial',retryable=False)
         with tempfile.TemporaryDirectory() as directory, \
              patch('us_collector.utcnow',return_value=self.now), \
@@ -59,6 +60,7 @@ class ReliabilityTests(unittest.TestCase):
         class Client:
             count=0
             venue_cache={}
+            def json(self,method,path):return {'id':int(path.rsplit('/',1)[1])}
         coverage={'directory_complete': True, 'excluded_non_us_or_unknown': 0}
         calls=[]
         def first_run(client, ids, day):
@@ -95,6 +97,7 @@ class ReliabilityTests(unittest.TestCase):
         class Client:
             count=0
             venue_cache={}
+            def json(self,method,path):return {'id':int(path.rsplit('/',1)[1])}
         def pages(*args):
             yield []
             raise RetryableError('page two failed')
@@ -119,6 +122,7 @@ class ReliabilityTests(unittest.TestCase):
         class Client:
             count=0
             venue_cache={}
+            def json(self,method,path):return {'id':int(path.rsplit('/',1)[1])}
         with tempfile.TemporaryDirectory() as directory, \
              patch('us_collector.utcnow',return_value=self.now), \
              patch('us_collector.PublicClient',return_value=Client()), \
