@@ -1,0 +1,282 @@
+[
+  {
+    "id": 1,
+    "alias": "new-york",
+    "name": "New York Metro",
+    "timezone": "America/New_York",
+    "country_code": "USA"
+  },
+  {
+    "id": 2,
+    "alias": "los-angeles",
+    "name": "Los Angeles/Orange County Metro",
+    "timezone": "America/Los_Angeles",
+    "country_code": "USA"
+  },
+  {
+    "id": 3,
+    "alias": "san-francisco",
+    "name": "San Francisco Bay Area",
+    "timezone": "America/Los_Angeles",
+    "country_code": "USA"
+  },
+  {
+    "id": 4,
+    "alias": "chicago",
+    "name": "Chicago Metro",
+    "timezone": "America/Chicago",
+    "country_code": "USA"
+  },
+  {
+    "id": 5,
+    "alias": "miami",
+    "name": "Miami/South Florida Metro",
+    "timezone": "America/New_York",
+    "country_code": "USA"
+  },
+  {
+    "id": 6,
+    "alias": "boston",
+    "name": "Boston Metro",
+    "timezone": "America/New_York",
+    "country_code": "USA"
+  },
+  {
+    "id": 7,
+    "alias": "washington-dc",
+    "name": "Washington, D.C. Metro",
+    "timezone": "America/New_York",
+    "country_code": "USA"
+  },
+  {
+    "id": 8,
+    "alias": "seattle",
+    "name": "Seattle Metro",
+    "timezone": "America/Los_Angeles",
+    "country_code": "USA"
+  },
+  {
+    "id": 9,
+    "alias": "atlanta",
+    "name": "Atlanta Metro",
+    "timezone": "America/New_York",
+    "country_code": "USA"
+  },
+  {
+    "id": 10,
+    "alias": "austin",
+    "name": "Austin Metro",
+    "timezone": "America/Chicago",
+    "country_code": "USA"
+  },
+  {
+    "id": 11,
+    "alias": "charlotte",
+    "name": "Charlotte Metro",
+    "timezone": "America/New_York",
+    "country_code": "USA"
+  },
+  {
+    "id": 12,
+    "alias": "columbus",
+    "name": "Columbus Metro",
+    "timezone": "America/New_York",
+    "country_code": "USA"
+  },
+  {
+    "id": 13,
+    "alias": "dallas",
+    "name": "Dallas/Fort Worth Metro",
+    "timezone": "America/Chicago",
+    "country_code": "USA"
+  },
+  {
+    "id": 14,
+    "alias": "denver",
+    "name": "Denver/Boulder Metro",
+    "timezone": "America/Denver",
+    "country_code": "USA"
+  },
+  {
+    "id": 15,
+    "alias": "houston",
+    "name": "Houston Metro",
+    "timezone": "America/Chicago",
+    "country_code": "USA"
+  },
+  {
+    "id": 16,
+    "alias": "minneapolis",
+    "name": "Minneapolis/St. Paul Metro",
+    "timezone": "America/Chicago",
+    "country_code": "USA"
+  },
+  {
+    "id": 17,
+    "alias": "philadelphia",
+    "name": "Philadelphia Metro",
+    "timezone": "America/New_York",
+    "country_code": "USA"
+  },
+  {
+    "id": 18,
+    "alias": "phoenix",
+    "name": "Phoenix/Scottsdale Metro",
+    "timezone": "America/Phoenix",
+    "country_code": "USA"
+  },
+  {
+    "id": 19,
+    "alias": "portland",
+    "name": "Portland Metro",
+    "timezone": "America/Los_Angeles",
+    "country_code": "USA"
+  },
+  {
+    "id": 20,
+    "alias": "san-diego",
+    "name": "San Diego Metro",
+    "timezone": "America/Los_Angeles",
+    "country_code": "USA"
+  },
+  {
+    "id": 21,
+    "alias": "las-vegas",
+    "name": "Las Vegas Metro",
+    "timezone": "America/Los_Angeles",
+    "country_code": "USA"
+  },
+  {
+    "id": 22,
+    "alias": "raleigh",
+    "name": "Raleigh Metro",
+    "timezone": "America/New_York",
+    "country_code": "USA"
+  },
+  {
+    "id": 23,
+    "alias": "baltimore",
+    "name": "Baltimore Metro",
+    "timezone": "America/New_York",
+    "country_code": "USA"
+  },
+  {
+    "id": 24,
+    "alias": "tampa",
+    "name": "Tampa Metro",
+    "timezone": "America/New_York",
+    "country_code": "USA"
+  },
+  {
+    "id": 25,
+    "alias": "st-louis",
+    "name": "St. Louis Metro",
+    "timezone": "America/Chicago",
+    "country_code": "USA"
+  },
+  {
+    "id": 26,
+    "alias": "orlando",
+    "name": "Orlando Metro",
+    "timezone": "America/New_York",
+    "country_code": "USA"
+  },
+  {
+    "id": 27,
+    "alias": "nashville",
+    "name": "Nashville Metro",
+    "timezone": "America/Chicago",
+    "country_code": "USA"
+  },
+  {
+    "id": 28,
+    "alias": "sacramento",
+    "name": "Sacramento Metro",
+    "timezone": "America/Los_Angeles",
+    "country_code": "USA"
+  },
+  {
+    "id": 29,
+    "alias": "kansas-city",
+    "name": "Kansas City Metro",
+    "timezone": "America/Chicago",
+    "country_code": "USA"
+  },
+  {
+    "id": 30,
+    "alias": "cincinnati",
+    "name": "Cincinnati Metro",
+    "timezone": "America/New_York",
+    "country_code": "USA"
+  },
+  {
+    "id": 32,
+    "alias": "pittsburgh",
+    "name": "Pittsburgh Metro",
+    "timezone": "America/New_York",
+    "country_code": "USA"
+  },
+  {
+    "id": 34,
+    "alias": "milwaukee",
+    "name": "Milwaukee Metro",
+    "timezone": "America/Chicago",
+    "country_code": "USA"
+  },
+  {
+    "id": 43,
+    "alias": "new-orleans",
+    "name": "New Orleans Metro",
+    "timezone": "America/Chicago",
+    "country_code": "USA"
+  },
+  {
+    "id": 44,
+    "alias": "san-antonio",
+    "name": "San Antonio Metro",
+    "timezone": "America/Chicago",
+    "country_code": "USA"
+  },
+  {
+    "id": 45,
+    "alias": "indianapolis",
+    "name": "Indianapolis Metro",
+    "timezone": "America/New_York",
+    "country_code": "USA"
+  },
+  {
+    "id": 46,
+    "alias": "salt-lake-city",
+    "name": "Salt Lake City Metro",
+    "timezone": "America/Denver",
+    "country_code": "USA"
+  },
+  {
+    "id": 47,
+    "alias": "honolulu",
+    "name": "Honolulu Metro",
+    "timezone": "Pacific/Honolulu",
+    "country_code": "USA"
+  },
+  {
+    "id": 49,
+    "alias": "inland-empire",
+    "name": "Inland Empire Metro",
+    "timezone": "America/Los_Angeles",
+    "country_code": "USA"
+  },
+  {
+    "id": 50,
+    "alias": "missoula",
+    "name": "Missoula Metro",
+    "timezone": "America/Denver",
+    "country_code": "USA"
+  },
+  {
+    "id": 59,
+    "alias": "united-states",
+    "name": "United States",
+    "timezone": "America/Denver",
+    "country_code": "USA"
+  }
+]

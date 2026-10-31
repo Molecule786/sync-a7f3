@@ -1,0 +1,6 @@
+{
+  "active_market_ids": [50, 34, 45],
+  "days_ahead": 7,
+  "max_requests_per_market": 150,
+  "notes": "Free-plan staged rollout: Missoula, Milwaukee, Indianapolis. NYC legacy pilot remains active separately within the same workflow. National coverage not complete."
+}
