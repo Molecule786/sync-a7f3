@@ -42,6 +42,7 @@ class PublicClient:
         self.session = requests.Session()
         self.delay, self.max_requests = delay,max_requests
         self.count, self.last = 0,0
+        self.venue_cache = {}
 
     def request(self, method, path, **kwargs):
         url = path if path.startswith('https://') else ORIGIN+path
@@ -94,6 +95,41 @@ def directory_module(modules):
     return x
 
 
+def merge_venue_metadata(venue, detail):
+    """Recover missing address fields only from published structured geography."""
+    if detail.get('id') != venue.get('id'):
+        raise CollectionError('Venue detail identity mismatch')
+    out=dict(venue)
+    out['alias']=venue.get('alias') or detail.get('alias')
+    out['name']=venue.get('name') or detail.get('name')
+    address=dict(detail.get('address') or {})
+    address.update({k:v for k,v in (venue.get('address') or {}).items() if v})
+    location=dict(detail.get('location') or {})
+    location.update({k:v for k,v in (venue.get('location') or {}).items() if v is not None})
+    geo=detail.get('global_location') or {}
+    country=((geo.get('msa') or {}).get('country') or {}).get('short_code') or location.get('country_short_code')
+    if country:location['country_short_code']=country
+    area=(geo.get('areas') or {}).get('city')
+    if country=='US' and isinstance(area,str):
+        parts=[p.strip() for p in area.rsplit(',',2)]
+        if len(parts)==3 and parts[1] in STATES and parts[2] in ('USA','United States'):
+            if not address.get('state') or address['state']==parts[1]:
+                address['state']=address.get('state') or parts[1]
+                address['city']=address.get('city') or parts[0]
+    out['address']=address;out['location']=location
+    return out
+
+
+def enrich_venue(client,venue):
+    address=venue.get('address') or {}
+    if address.get('city') and address.get('state') and venue.get('alias'):
+        return venue
+    identity=venue['id']
+    if identity not in client.venue_cache:
+        client.venue_cache[identity]=client.json('GET',f'/_api/v2/venues/{identity}')
+    return merge_venue_metadata(venue,client.venue_cache[identity])
+
+
 def discover(client, market, root, sample_pages=0):
     result=client.json('GET','/_api/unisearch/v1/search_url',params={'tag_id':'activity','msa_id':market['id']})
     path=result.get('url','')
@@ -127,7 +163,9 @@ def discover(client, market, root, sample_pages=0):
         if page['total_hits']!=expected:
             raise CollectionError('Directory count changed during enumeration; retry run')
     # US-facing searches can return Canadian studios. Verify geography per record.
-    venues=[v for v in seen.values() if str((v.get('address') or {}).get('state') or '').upper() in STATES]
+    resolved=[enrich_venue(client,v) for v in seen.values()]
+    venues=[v for v in resolved if str((v.get('address') or {}).get('state') or '').upper() in STATES
+            and (v.get('location') or {}).get('country_short_code','US')=='US']
     return venues,{'directory_expected':expected,'directory_discovered':len(seen),'us_venues':len(venues),'excluded_non_us_or_unknown':len(seen)-len(venues),'directory_pages':count,'directory_complete':len(seen)==expected and not capped,'source_count_capped':capped}
 
 
@@ -151,10 +189,10 @@ def parse_session(item, start, end):
     except (KeyError,TypeError,ValueError,OverflowError) as exc:raise CollectionError('Invalid session time') from exc
     if finishes<=begins:raise CollectionError('Session end precedes start')
     if not max(start,utcnow())<=begins<end:return None,'outside_window'
-    title=cls.get('name','').strip()
-    city=address.get('city','').strip()
+    title=str(cls.get('name') or '').strip()
+    city=str(address.get('city') or '').strip()
     if not title or not city or not venue.get('alias') or not cls.get('alias'):
-        raise CollectionError('Required session fields missing')
+        return None,'missing_required_fields'
     row={'event_id':f"classpass:{item['id']}",'source':'classpass','title':title,
          'starts_at':begins.isoformat(),'ends_at':finishes.isoformat(),
          'city':city,'city_slug':slug(city),'region':region,'country':'US','category':'fitness',
@@ -205,6 +243,8 @@ def collect_market(market, root, sample=False, max_requests=5000):
             for items in schedule_pages(client,[v['id'] for v in chunk],date):
                 summary['pages']+=1
                 for item in items:
+                    item=dict(item)
+                    item['venue']=enrich_venue(client,item.get('venue') or {})
                     row,reason=parse_session(item,started,cutoff)
                     if row:all_rows[row['event_id']]=row
                     else:summary['excluded'][reason]=summary['excluded'].get(reason,0)+1
@@ -215,8 +255,12 @@ def collect_market(market, root, sample=False, max_requests=5000):
             print(json.dumps({'market_id':market['id'],'task':index+1,'tasks':len(tasks),'rows':len(all_rows),'requests':client.count}),flush=True)
         complete=(summary['directory_complete'] and summary['completed_tasks']==len(tasks)
                   and not summary['excluded_non_us_or_unknown']
-                  and not summary['excluded'].get('unknown_geography'))
-        summary.update(status='complete' if complete else 'partial',verified_rows=len(all_rows),requests=client.count,finished_at=utcnow().isoformat())
+                  and not summary['excluded'].get('unknown_geography')
+                  and not summary['excluded'].get('missing_required_fields'))
+        if not all_rows and (summary['excluded'].get('unknown_geography') or summary['excluded'].get('missing_required_fields')):
+            raise CollectionError('No sessions could be verified; unresolved source fields')
+        summary.update(status='complete' if complete else 'partial',verified_rows=len(all_rows),requests=client.count,
+                       venue_details_consulted=len(client.venue_cache),finished_at=utcnow().isoformat())
     except Exception as exc:
         summary.update(status='failed',error=str(exc) if isinstance(exc,CollectionError) else type(exc).__name__,verified_rows=len(all_rows),requests=client.count,finished_at=utcnow().isoformat())
         save(root/'summary.json',summary)

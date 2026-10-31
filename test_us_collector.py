@@ -1,7 +1,7 @@
 import copy,json,unittest
 from datetime import datetime,timedelta,timezone
 from unittest.mock import patch
-from us_collector import CollectionError,parse_session,first_directory,schedule_pages,slug
+from us_collector import CollectionError,parse_session,first_directory,schedule_pages,slug,merge_venue_metadata
 
 class USCollectionTests(unittest.TestCase):
     def setUp(self):
@@ -53,3 +53,12 @@ class USCollectionTests(unittest.TestCase):
         class Client:
             def json(self,*args,**kwargs):return {'schedules':[{'venue':{'id':2}}]}
         with self.assertRaises(CollectionError):list(schedule_pages(Client(),[1],'2026-11-01'))
+    def test_missing_city_uses_verified_published_geography(self):
+        venue={'id':38091,'address':{'state':'IN','city':''}}
+        detail={'id':38091,'address':{},'global_location':{'msa':{'country':{'short_code':'US'}},'areas':{'city':'Greenwood, IN, USA'}}}
+        self.assertEqual(merge_venue_metadata(venue,detail)['address']['city'],'Greenwood')
+        detail['global_location']['areas']['city']='Made Up, NY, USA'
+        self.assertFalse(merge_venue_metadata(venue,detail)['address'].get('city'))
+    def test_missing_class_url_is_reported_as_gap(self):
+        self.row['class']['alias']=None
+        self.assertEqual(self.parse(self.row)[1],'missing_required_fields')
