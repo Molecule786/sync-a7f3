@@ -1,0 +1,1384 @@
+[
+  {
+    "id": 1,
+    "name": "New York Metro",
+    "alias": "new-york",
+    "city": "New York",
+    "default_location": {
+      "lat": 40.735862731933594,
+      "lon": -73.99108123779297,
+      "zoom_level": 13
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 75,
+    "package_purchase": true,
+    "timezone": "America/New_York",
+    "version": 1
+  },
+  {
+    "id": 2,
+    "name": "Los Angeles/Orange County Metro",
+    "alias": "los-angeles",
+    "city": "Los Angeles/Orange County",
+    "default_location": {
+      "lat": 34.040714263916016,
+      "lon": -118.24677276611328,
+      "zoom_level": 12
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 60,
+    "package_purchase": true,
+    "timezone": "America/Los_Angeles",
+    "version": 1
+  },
+  {
+    "id": 3,
+    "name": "San Francisco Bay Area",
+    "alias": "san-francisco",
+    "city": "San Francisco",
+    "default_location": {
+      "lat": 37.77851867675781,
+      "lon": -122.4056396484375,
+      "zoom_level": 11
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 65,
+    "package_purchase": true,
+    "timezone": "America/Los_Angeles",
+    "version": 1
+  },
+  {
+    "id": 4,
+    "name": "Chicago Metro",
+    "alias": "chicago",
+    "city": "Chicago",
+    "default_location": {
+      "lat": 41.9088020324707,
+      "lon": -87.67959594726562,
+      "zoom_level": 12
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 60,
+    "package_purchase": true,
+    "timezone": "America/Chicago",
+    "version": 1
+  },
+  {
+    "id": 5,
+    "name": "Miami/South Florida Metro",
+    "alias": "miami",
+    "city": "Miami/South Florida",
+    "default_location": {
+      "lat": 25.771251678466797,
+      "lon": -80.1918716430664,
+      "zoom_level": 12
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 60,
+    "package_purchase": true,
+    "timezone": "America/New_York",
+    "version": 1
+  },
+  {
+    "id": 6,
+    "name": "Boston Metro",
+    "alias": "boston",
+    "city": "Boston",
+    "default_location": {
+      "lat": 42.355709075927734,
+      "lon": -71.05720520019531,
+      "zoom_level": 12
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 65,
+    "package_purchase": true,
+    "timezone": "America/New_York",
+    "version": 1
+  },
+  {
+    "id": 7,
+    "name": "Washington, D.C. Metro",
+    "alias": "washington-dc",
+    "city": "Washington, DC",
+    "default_location": {
+      "lat": 38.92799377441406,
+      "lon": -77.0578842163086,
+      "zoom_level": 12
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 55,
+    "package_purchase": true,
+    "timezone": "America/New_York",
+    "version": 1
+  },
+  {
+    "id": 8,
+    "name": "Seattle Metro",
+    "alias": "seattle",
+    "city": "Seattle",
+    "default_location": {
+      "lat": 47.662776947021484,
+      "lon": -122.31387329101562,
+      "zoom_level": 12
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 50,
+    "package_purchase": true,
+    "timezone": "America/Los_Angeles",
+    "version": 1
+  },
+  {
+    "id": 9,
+    "name": "Atlanta Metro",
+    "alias": "atlanta",
+    "city": "Atlanta",
+    "default_location": {
+      "lat": 33.75571060180664,
+      "lon": -84.38837432861328,
+      "zoom_level": 12
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 55,
+    "package_purchase": true,
+    "timezone": "America/New_York",
+    "version": 1
+  },
+  {
+    "id": 10,
+    "name": "Austin Metro",
+    "alias": "austin",
+    "city": "Austin",
+    "default_location": {
+      "lat": 30.272920608520508,
+      "lon": -97.744384765625,
+      "zoom_level": 12
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 50,
+    "package_purchase": true,
+    "timezone": "America/Chicago",
+    "version": 1
+  },
+  {
+    "id": 11,
+    "name": "Charlotte Metro",
+    "alias": "charlotte",
+    "city": "Charlotte",
+    "default_location": {
+      "lat": 35.22708511352539,
+      "lon": -80.84312438964844,
+      "zoom_level": 12
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 50,
+    "package_purchase": true,
+    "timezone": "America/New_York",
+    "version": 1
+  },
+  {
+    "id": 12,
+    "name": "Columbus Metro",
+    "alias": "columbus",
+    "city": "Columbus",
+    "default_location": {
+      "lat": 39.96678924560547,
+      "lon": -82.99047088623047,
+      "zoom_level": 12
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 45,
+    "package_purchase": true,
+    "timezone": "America/New_York",
+    "version": 1
+  },
+  {
+    "id": 13,
+    "name": "Dallas/Fort Worth Metro",
+    "alias": "dallas",
+    "city": "Dallas/Fort Worth",
+    "default_location": {
+      "lat": 32.80155563354492,
+      "lon": -96.8002700805664,
+      "zoom_level": 10
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 55,
+    "package_purchase": true,
+    "timezone": "America/Chicago",
+    "version": 1
+  },
+  {
+    "id": 14,
+    "name": "Denver/Boulder Metro",
+    "alias": "denver",
+    "city": "Denver/Boulder",
+    "default_location": {
+      "lat": 39.739234924316406,
+      "lon": -104.99024963378906,
+      "zoom_level": 12
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 50,
+    "package_purchase": true,
+    "timezone": "America/Denver",
+    "version": 1
+  },
+  {
+    "id": 15,
+    "name": "Houston Metro",
+    "alias": "houston",
+    "city": "Houston",
+    "default_location": {
+      "lat": 29.755970001220703,
+      "lon": -95.3573226928711,
+      "zoom_level": 12
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 50,
+    "package_purchase": true,
+    "timezone": "America/Chicago",
+    "version": 1
+  },
+  {
+    "id": 16,
+    "name": "Minneapolis/St. Paul Metro",
+    "alias": "minneapolis",
+    "city": "Minneapolis/St. Paul",
+    "default_location": {
+      "lat": 44.976463317871094,
+      "lon": -93.27610778808594,
+      "zoom_level": 12
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 55,
+    "package_purchase": true,
+    "timezone": "America/Chicago",
+    "version": 1
+  },
+  {
+    "id": 17,
+    "name": "Philadelphia Metro",
+    "alias": "philadelphia",
+    "city": "Philadelphia",
+    "default_location": {
+      "lat": 39.950904846191406,
+      "lon": -75.15745544433594,
+      "zoom_level": 12
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 55,
+    "package_purchase": true,
+    "timezone": "America/New_York",
+    "version": 1
+  },
+  {
+    "id": 18,
+    "name": "Phoenix/Scottsdale Metro",
+    "alias": "phoenix",
+    "city": "Phoenix/Scottsdale",
+    "default_location": {
+      "lat": 33.43682098388672,
+      "lon": -112.08275604248047,
+      "zoom_level": 11
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 45,
+    "package_purchase": true,
+    "timezone": "America/Phoenix",
+    "version": 1
+  },
+  {
+    "id": 19,
+    "name": "Portland Metro",
+    "alias": "portland",
+    "city": "Portland",
+    "default_location": {
+      "lat": 45.530208587646484,
+      "lon": -122.68120574951172,
+      "zoom_level": 13
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 45,
+    "package_purchase": true,
+    "timezone": "America/Los_Angeles",
+    "version": 1
+  },
+  {
+    "id": 20,
+    "name": "San Diego Metro",
+    "alias": "san-diego",
+    "city": "San Diego",
+    "default_location": {
+      "lat": 32.74786376953125,
+      "lon": -117.16471099853516,
+      "zoom_level": 11
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 50,
+    "package_purchase": true,
+    "timezone": "America/Los_Angeles",
+    "version": 1
+  },
+  {
+    "id": 21,
+    "name": "Las Vegas Metro",
+    "alias": "las-vegas",
+    "city": "Las Vegas",
+    "default_location": {
+      "lat": 36.16706085205078,
+      "lon": -115.13555145263672,
+      "zoom_level": 12
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 45,
+    "package_purchase": true,
+    "timezone": "America/Los_Angeles",
+    "version": 1
+  },
+  {
+    "id": 22,
+    "name": "Raleigh Metro",
+    "alias": "raleigh",
+    "city": "Raleigh",
+    "default_location": {
+      "lat": 35.7822380065918,
+      "lon": -78.62852478027344,
+      "zoom_level": 12
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 50,
+    "package_purchase": true,
+    "timezone": "America/New_York",
+    "version": 1
+  },
+  {
+    "id": 23,
+    "name": "Baltimore Metro",
+    "alias": "baltimore",
+    "city": "Baltimore",
+    "default_location": {
+      "lat": 39.29200744628906,
+      "lon": -76.6167221069336,
+      "zoom_level": 12
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 45,
+    "package_purchase": true,
+    "timezone": "America/New_York",
+    "version": 1
+  },
+  {
+    "id": 24,
+    "name": "Tampa Metro",
+    "alias": "tampa",
+    "city": "Tampa",
+    "default_location": {
+      "lat": 27.949447631835938,
+      "lon": -82.4563217163086,
+      "zoom_level": 12
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 40,
+    "package_purchase": true,
+    "timezone": "America/New_York",
+    "version": 1
+  },
+  {
+    "id": 25,
+    "name": "St. Louis Metro",
+    "alias": "st-louis",
+    "city": "St. Louis",
+    "default_location": {
+      "lat": 38.63959884643555,
+      "lon": -90.25496673583984,
+      "zoom_level": 12
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 45,
+    "package_purchase": true,
+    "timezone": "America/Chicago",
+    "version": 1
+  },
+  {
+    "id": 26,
+    "name": "Orlando Metro",
+    "alias": "orlando",
+    "city": "Orlando",
+    "default_location": {
+      "lat": 28.54865074157715,
+      "lon": -81.38053131103516,
+      "zoom_level": 12
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 45,
+    "package_purchase": true,
+    "timezone": "America/New_York",
+    "version": 1
+  },
+  {
+    "id": 27,
+    "name": "Nashville Metro",
+    "alias": "nashville",
+    "city": "Nashville",
+    "default_location": {
+      "lat": 36.16856002807617,
+      "lon": -86.7850341796875,
+      "zoom_level": 12
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 50,
+    "package_purchase": true,
+    "timezone": "America/Chicago",
+    "version": 1
+  },
+  {
+    "id": 28,
+    "name": "Sacramento Metro",
+    "alias": "sacramento",
+    "city": "Sacramento",
+    "default_location": {
+      "lat": 38.57775115966797,
+      "lon": -121.49417114257812,
+      "zoom_level": 12
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 45,
+    "package_purchase": true,
+    "timezone": "America/Los_Angeles",
+    "version": 1
+  },
+  {
+    "id": 29,
+    "name": "Kansas City Metro",
+    "alias": "kansas-city",
+    "city": "Kansas City",
+    "default_location": {
+      "lat": 39.099727630615234,
+      "lon": -94.57856750488281,
+      "zoom_level": 12
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 45,
+    "package_purchase": true,
+    "timezone": "America/Chicago",
+    "version": 1
+  },
+  {
+    "id": 30,
+    "name": "Cincinnati Metro",
+    "alias": "cincinnati",
+    "city": "Cincinnati",
+    "default_location": {
+      "lat": 39.1016960144043,
+      "lon": -84.5125503540039,
+      "zoom_level": 12
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 99,
+    "package_purchase": true,
+    "timezone": "America/New_York",
+    "version": 1
+  },
+  {
+    "id": 32,
+    "name": "Pittsburgh Metro",
+    "alias": "pittsburgh",
+    "city": "Pittsburgh",
+    "default_location": {
+      "lat": 40.441829681396484,
+      "lon": -80.0003890991211,
+      "zoom_level": 12
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 79,
+    "package_purchase": true,
+    "timezone": "America/New_York",
+    "version": 1
+  },
+  {
+    "id": 34,
+    "name": "Milwaukee Metro",
+    "alias": "milwaukee",
+    "city": "Milwaukee",
+    "default_location": {
+      "lat": 43.04186248779297,
+      "lon": -87.91632080078125,
+      "zoom_level": 12
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 79,
+    "package_purchase": true,
+    "timezone": "America/Chicago",
+    "version": 1
+  },
+  {
+    "id": 35,
+    "name": "London Metro",
+    "alias": "london",
+    "city": "London",
+    "default_location": {
+      "lat": 51.53126907348633,
+      "lon": -0.15696939826011658,
+      "zoom_level": 11
+    },
+    "currency_code": "gbp",
+    "currency_format": "£",
+    "country_code": "GBR",
+    "country_id": 3,
+    "price": 55,
+    "package_purchase": true,
+    "timezone": "Europe/London",
+    "version": 1
+  },
+  {
+    "id": 36,
+    "name": "Toronto Metro",
+    "alias": "toronto",
+    "city": "Toronto",
+    "default_location": {
+      "lat": 43.652503967285156,
+      "lon": -79.38356018066406,
+      "zoom_level": 11
+    },
+    "currency_code": "cad",
+    "currency_format": "C$",
+    "country_code": "CAN",
+    "country_id": 2,
+    "price": 65,
+    "package_purchase": true,
+    "timezone": "America/New_York",
+    "version": 1
+  },
+  {
+    "id": 37,
+    "name": "Vancouver Metro",
+    "alias": "vancouver",
+    "city": "Vancouver",
+    "default_location": {
+      "lat": 49.28195571899414,
+      "lon": -123.11707305908203,
+      "zoom_level": 12
+    },
+    "currency_code": "cad",
+    "currency_format": "C$",
+    "country_code": "CAN",
+    "country_id": 2,
+    "price": 55,
+    "package_purchase": true,
+    "timezone": "America/Phoenix",
+    "version": 1
+  },
+  {
+    "id": 38,
+    "name": "Sydney Metro",
+    "alias": "sydney",
+    "city": "Sydney",
+    "default_location": {
+      "lat": -33.873138427734375,
+      "lon": 151.21127319335938,
+      "zoom_level": 12
+    },
+    "currency_code": "aud",
+    "currency_format": "$",
+    "country_code": "AUS",
+    "country_id": 4,
+    "price": 60,
+    "package_purchase": true,
+    "timezone": "Australia/Sydney",
+    "version": 1
+  },
+  {
+    "id": 39,
+    "name": "Melbourne Metro",
+    "alias": "melbourne",
+    "city": "Melbourne",
+    "default_location": {
+      "lat": -37.81797790527344,
+      "lon": 144.96905517578125,
+      "zoom_level": 11
+    },
+    "currency_code": "aud",
+    "currency_format": "$",
+    "country_code": "AUS",
+    "country_id": 4,
+    "price": 60,
+    "package_purchase": true,
+    "timezone": "Australia/Melbourne",
+    "version": 1
+  },
+  {
+    "id": 40,
+    "name": "Brisbane Metro",
+    "alias": "brisbane",
+    "city": "Brisbane",
+    "default_location": {
+      "lat": -27.47099494934082,
+      "lon": 153.02523803710938,
+      "zoom_level": 11
+    },
+    "currency_code": "aud",
+    "currency_format": "$",
+    "country_code": "AUS",
+    "country_id": 4,
+    "price": 60,
+    "package_purchase": true,
+    "timezone": "Australia/Brisbane",
+    "version": 1
+  },
+  {
+    "id": 41,
+    "name": "Perth Metro",
+    "alias": "perth",
+    "city": "Perth",
+    "default_location": {
+      "lat": -31.95052719116211,
+      "lon": 115.86045837402344,
+      "zoom_level": 11
+    },
+    "currency_code": "aud",
+    "currency_format": "$",
+    "country_code": "AUS",
+    "country_id": 4,
+    "price": 60,
+    "package_purchase": true,
+    "timezone": "Australia/Perth",
+    "version": 1
+  },
+  {
+    "id": 42,
+    "name": "Adelaide Metro",
+    "alias": "adelaide",
+    "city": "Adelaide",
+    "default_location": {
+      "lat": -34.928585052490234,
+      "lon": 138.6000213623047,
+      "zoom_level": 11
+    },
+    "currency_code": "aud",
+    "currency_format": "$",
+    "country_code": "AUS",
+    "country_id": 4,
+    "price": 60,
+    "package_purchase": true,
+    "timezone": "Australia/Adelaide",
+    "version": 1
+  },
+  {
+    "id": 43,
+    "name": "New Orleans Metro",
+    "alias": "new-orleans",
+    "city": "New Orleans",
+    "default_location": {
+      "lat": 29.950836181640625,
+      "lon": -90.07559204101562,
+      "zoom_level": 12
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 75,
+    "package_purchase": true,
+    "timezone": "America/Chicago",
+    "version": 1
+  },
+  {
+    "id": 44,
+    "name": "San Antonio Metro",
+    "alias": "san-antonio",
+    "city": "San Antonio",
+    "default_location": {
+      "lat": 29.42841911315918,
+      "lon": -98.48699188232422,
+      "zoom_level": 12
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 75,
+    "package_purchase": true,
+    "timezone": "America/Chicago",
+    "version": 1
+  },
+  {
+    "id": 45,
+    "name": "Indianapolis Metro",
+    "alias": "indianapolis",
+    "city": "Indianapolis",
+    "default_location": {
+      "lat": 39.768856048583984,
+      "lon": -86.159912109375,
+      "zoom_level": 11
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 75,
+    "package_purchase": true,
+    "timezone": "America/New_York",
+    "version": 1
+  },
+  {
+    "id": 46,
+    "name": "Salt Lake City Metro",
+    "alias": "salt-lake-city",
+    "city": "Salt Lake City",
+    "default_location": {
+      "lat": 40.762882232666016,
+      "lon": -111.8968276977539,
+      "zoom_level": 11
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 75,
+    "package_purchase": true,
+    "timezone": "America/Denver",
+    "version": 1
+  },
+  {
+    "id": 47,
+    "name": "Honolulu Metro",
+    "alias": "honolulu",
+    "city": "Honolulu",
+    "default_location": {
+      "lat": 21.30961799621582,
+      "lon": -157.85995483398438,
+      "zoom_level": 13
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 75,
+    "package_purchase": true,
+    "timezone": "Pacific/Honolulu",
+    "version": 1
+  },
+  {
+    "id": 48,
+    "name": "Calgary Metro",
+    "alias": "calgary",
+    "city": "Calgary",
+    "default_location": {
+      "lat": 51.04780960083008,
+      "lon": -114.05926513671875,
+      "zoom_level": 13
+    },
+    "currency_code": "cad",
+    "currency_format": "C$",
+    "country_code": "CAN",
+    "country_id": 2,
+    "price": 75,
+    "package_purchase": true,
+    "timezone": "America/Regina",
+    "version": 1
+  },
+  {
+    "id": 49,
+    "name": "Inland Empire Metro",
+    "alias": "inland-empire",
+    "city": "Inland Empire",
+    "default_location": {
+      "lat": 33.986549377441406,
+      "lon": -117.3792724609375,
+      "zoom_level": 11
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 75,
+    "package_purchase": true,
+    "timezone": "America/Los_Angeles",
+    "version": 1
+  },
+  {
+    "id": 50,
+    "name": "Missoula Metro",
+    "alias": "missoula",
+    "city": "Missoula",
+    "default_location": {
+      "lat": 46.871551513671875,
+      "lon": -113.99417877197266,
+      "zoom_level": 13
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 75,
+    "package_purchase": true,
+    "timezone": "America/Denver",
+    "version": 1
+  },
+  {
+    "id": 51,
+    "name": "Manchester Metro",
+    "alias": "manchester",
+    "city": "Manchester",
+    "default_location": {
+      "lat": 53.48239517211914,
+      "lon": -2.2426788806915283,
+      "zoom_level": 13
+    },
+    "currency_code": "gbp",
+    "currency_format": "£",
+    "country_code": "GBR",
+    "country_id": 3,
+    "price": 75,
+    "package_purchase": true,
+    "timezone": "Europe/London",
+    "version": 1
+  },
+  {
+    "id": 52,
+    "name": "Bristol Metro",
+    "alias": "bristol",
+    "city": "Bristol",
+    "default_location": {
+      "lat": 51.45771408081055,
+      "lon": -2.589116334915161,
+      "zoom_level": 13
+    },
+    "currency_code": "gbp",
+    "currency_format": "£",
+    "country_code": "GBR",
+    "country_id": 3,
+    "price": 75,
+    "package_purchase": true,
+    "timezone": "Europe/London",
+    "version": 1
+  },
+  {
+    "id": 58,
+    "name": "Singapore",
+    "alias": "singapore",
+    "city": "Singapore",
+    "default_location": {
+      "lat": 1.2902699708938599,
+      "lon": 103.85195922851562,
+      "zoom_level": 13
+    },
+    "currency_code": "sgd",
+    "currency_format": "$",
+    "country_code": "SGP",
+    "country_id": 5,
+    "package_purchase": true,
+    "timezone": "Asia/Singapore",
+    "version": 2
+  },
+  {
+    "id": 59,
+    "name": "United States",
+    "alias": "united-states",
+    "city": "United States",
+    "default_location": {
+      "lat": 40.735862731933594,
+      "lon": -73.99108123779297,
+      "zoom_level": 13
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "package_purchase": true,
+    "timezone": "America/Denver",
+    "version": 2
+  },
+  {
+    "id": 60,
+    "name": "Canada",
+    "alias": "canada",
+    "city": "Canada",
+    "default_location": {
+      "lat": 43.652503967285156,
+      "lon": -79.38356018066406,
+      "zoom_level": 13
+    },
+    "currency_code": "cad",
+    "currency_format": "C$",
+    "country_code": "CAN",
+    "country_id": 2,
+    "package_purchase": true,
+    "timezone": "America/New_York",
+    "version": 2
+  },
+  {
+    "id": 61,
+    "name": "United Kingdom",
+    "alias": "united-kingdom",
+    "city": "United Kingdom",
+    "default_location": {
+      "lat": 51.53126907348633,
+      "lon": -0.15696939826011658,
+      "zoom_level": 13
+    },
+    "currency_code": "gbp",
+    "currency_format": "£",
+    "country_code": "GBR",
+    "country_id": 3,
+    "package_purchase": true,
+    "timezone": "Europe/London",
+    "version": 2
+  },
+  {
+    "id": 62,
+    "name": "Australia",
+    "alias": "australia",
+    "city": "Australia",
+    "default_location": {
+      "lat": -33.873138427734375,
+      "lon": 151.21127319335938,
+      "zoom_level": 13
+    },
+    "currency_code": "aud",
+    "currency_format": "$",
+    "country_code": "AUS",
+    "country_id": 4,
+    "package_purchase": true,
+    "timezone": "Australia/Sydney",
+    "version": 2
+  },
+  {
+    "id": 64,
+    "name": "United Arab Emirates",
+    "alias": "united-arab-emirates",
+    "city": "United Arab Emirates",
+    "default_location": {
+      "lat": 25.14512062072754,
+      "lon": 55.26923370361328,
+      "zoom_level": 12
+    },
+    "currency_code": "aed",
+    "currency_format": "AED",
+    "country_code": "ARE",
+    "country_id": 7,
+    "package_purchase": true,
+    "timezone": "Asia/Dubai",
+    "version": 2
+  },
+  {
+    "id": 67,
+    "name": "Netherlands",
+    "alias": "netherlands",
+    "city": "Netherlands",
+    "default_location": {
+      "lat": 52.132633209228516,
+      "lon": 5.291265964508057,
+      "zoom_level": 13
+    },
+    "currency_code": "eur",
+    "currency_format": "€",
+    "country_code": "NLD",
+    "country_id": 10,
+    "package_purchase": true,
+    "timezone": "Europe/Amsterdam",
+    "version": 2
+  },
+  {
+    "id": 68,
+    "name": "Ireland",
+    "alias": "ireland",
+    "city": "Ireland",
+    "default_location": {
+      "lat": 53.41291046142578,
+      "lon": -8.243889808654785,
+      "zoom_level": 13
+    },
+    "currency_code": "eur",
+    "currency_format": "€",
+    "country_code": "IRL",
+    "country_id": 11,
+    "package_purchase": true,
+    "timezone": "Europe/Dublin",
+    "version": 2
+  },
+  {
+    "id": 69,
+    "name": "Norway",
+    "alias": "norway",
+    "city": "Norway",
+    "default_location": {
+      "lat": 60.472023010253906,
+      "lon": 8.46894645690918,
+      "zoom_level": 13
+    },
+    "currency_code": "nok",
+    "currency_format": "kr",
+    "country_code": "NOR",
+    "country_id": 12,
+    "package_purchase": true,
+    "timezone": "Europe/Oslo",
+    "version": 2
+  },
+  {
+    "id": 70,
+    "name": "Sweden",
+    "alias": "sweden",
+    "city": "Sweden",
+    "default_location": {
+      "lat": 60.1281623840332,
+      "lon": 18.64350128173828,
+      "zoom_level": 13
+    },
+    "currency_code": "sek",
+    "currency_format": "kr",
+    "country_code": "SWE",
+    "country_id": 13,
+    "package_purchase": true,
+    "timezone": "Europe/Stockholm",
+    "version": 2
+  },
+  {
+    "id": 71,
+    "name": "Thailand",
+    "alias": "thailand",
+    "city": "Thailand",
+    "default_location": {
+      "lat": 13.725371360778809,
+      "lon": 100.59357452392578,
+      "zoom_level": 11
+    },
+    "currency_code": "thb",
+    "currency_format": "THB",
+    "country_code": "THA",
+    "country_id": 14,
+    "package_purchase": true,
+    "timezone": "Asia/Bangkok",
+    "version": 2
+  },
+  {
+    "id": 72,
+    "name": "Germany",
+    "alias": "germany",
+    "city": "Germany",
+    "default_location": {
+      "lat": 51.16569137573242,
+      "lon": 10.451525688171387,
+      "zoom_level": 13
+    },
+    "currency_code": "eur",
+    "currency_format": "€",
+    "country_code": "DEU",
+    "country_id": 15,
+    "package_purchase": true,
+    "timezone": "Europe/Berlin",
+    "version": 2
+  },
+  {
+    "id": 73,
+    "name": "Malaysia",
+    "alias": "malaysia",
+    "city": "Malaysia",
+    "default_location": {
+      "lat": 3.1389999389648438,
+      "lon": 101.68689727783203,
+      "zoom_level": 12
+    },
+    "currency_code": "myr",
+    "currency_format": "RM",
+    "country_code": "MYS",
+    "country_id": 16,
+    "package_purchase": true,
+    "timezone": "Asia/Kuala_Lumpur",
+    "version": 2
+  },
+  {
+    "id": 74,
+    "name": "France",
+    "alias": "france",
+    "city": "France",
+    "default_location": {
+      "lat": 48.85872268676758,
+      "lon": 2.346428632736206,
+      "zoom_level": 13
+    },
+    "currency_code": "eur",
+    "currency_format": "€",
+    "country_code": "FRA",
+    "country_id": 17,
+    "package_purchase": true,
+    "timezone": "Europe/Paris",
+    "version": 2
+  },
+  {
+    "id": 76,
+    "name": "Spain",
+    "alias": "spain",
+    "city": "Spain",
+    "default_location": {
+      "lat": 40.41692352294922,
+      "lon": -3.703780174255371,
+      "zoom_level": 13
+    },
+    "currency_code": "eur",
+    "currency_format": "€",
+    "country_code": "ESP",
+    "country_id": 19,
+    "package_purchase": true,
+    "timezone": "Europe/Madrid",
+    "version": 2
+  },
+  {
+    "id": 77,
+    "name": "Austria",
+    "alias": "austria",
+    "city": "Austria",
+    "default_location": {
+      "lat": 48.208168029785156,
+      "lon": 16.374107360839844,
+      "zoom_level": 13
+    },
+    "currency_code": "eur",
+    "currency_format": "€",
+    "country_code": "AUT",
+    "country_id": 20,
+    "package_purchase": true,
+    "timezone": "Europe/Vienna",
+    "version": 2
+  },
+  {
+    "id": 78,
+    "name": "Switzerland",
+    "alias": "switzerland",
+    "city": "Switzerland",
+    "default_location": {
+      "lat": 47.38629150390625,
+      "lon": 8.528934478759766,
+      "zoom_level": 13
+    },
+    "currency_code": "chf",
+    "currency_format": "SFr",
+    "country_code": "CHE",
+    "country_id": 21,
+    "package_purchase": true,
+    "timezone": "Europe/Zurich",
+    "version": 2
+  },
+  {
+    "id": 80,
+    "name": "Denmark",
+    "alias": "denmark",
+    "city": "Denmark",
+    "default_location": {
+      "lat": 55.68056869506836,
+      "lon": 12.576257705688477,
+      "zoom_level": 13
+    },
+    "currency_code": "dkk",
+    "currency_format": "Kr",
+    "country_code": "DNK",
+    "country_id": 23,
+    "package_purchase": true,
+    "timezone": "Europe/Copenhagen",
+    "version": 2
+  },
+  {
+    "id": 81,
+    "name": "Philippines",
+    "alias": "philippines",
+    "city": "Philippines",
+    "default_location": {
+      "lat": 14.599316596984863,
+      "lon": 120.98247528076172,
+      "zoom_level": 13
+    },
+    "currency_code": "php",
+    "currency_format": "P",
+    "country_code": "PHL",
+    "country_id": 24,
+    "package_purchase": true,
+    "timezone": "Asia/Manila",
+    "version": 2
+  },
+  {
+    "id": 82,
+    "name": "Indonesia",
+    "alias": "indonesia",
+    "city": "Indonesia",
+    "default_location": {
+      "lat": -6.20717716217041,
+      "lon": 106.84599304199219,
+      "zoom_level": 13
+    },
+    "currency_code": "idr",
+    "currency_format": "Rp",
+    "country_code": "IDN",
+    "country_id": 25,
+    "package_purchase": true,
+    "timezone": "Asia/Jakarta",
+    "version": 2
+  },
+  {
+    "id": 84,
+    "name": "India",
+    "alias": "india",
+    "city": "India",
+    "default_location": {
+      "lat": 19.084749221801758,
+      "lon": 72.87088775634766,
+      "zoom_level": 13
+    },
+    "currency_code": "inr",
+    "currency_format": "₹",
+    "country_code": "IND",
+    "country_id": 27,
+    "package_purchase": true,
+    "timezone": "Asia/Kolkata",
+    "version": 2
+  },
+  {
+    "id": 85,
+    "name": "Japan",
+    "alias": "japan",
+    "city": "Japan",
+    "default_location": {
+      "lat": 35.70922088623047,
+      "lon": 139.73190307617188,
+      "zoom_level": 13
+    },
+    "currency_code": "jpy",
+    "currency_format": "¥",
+    "country_code": "JPN",
+    "country_id": 28,
+    "package_purchase": true,
+    "timezone": "Asia/Tokyo",
+    "version": 2
+  },
+  {
+    "id": 90,
+    "name": "Brazil",
+    "alias": "brazil",
+    "city": "Brazil",
+    "default_location": {
+      "lat": -23.5455322265625,
+      "lon": -46.629920959472656,
+      "zoom_level": 13
+    },
+    "currency_code": "brl",
+    "currency_format": "R$",
+    "country_code": "BRA",
+    "country_id": 33,
+    "package_purchase": true,
+    "timezone": "America/Sao_Paulo",
+    "version": 2
+  },
+  {
+    "id": 93,
+    "name": "Belgium",
+    "alias": "belgium",
+    "city": "Belgium",
+    "default_location": {
+      "lat": 50.641700744628906,
+      "lon": 4.707572937011719,
+      "zoom_level": 13
+    },
+    "currency_code": "eur",
+    "currency_format": "€",
+    "country_code": "BEL",
+    "country_id": 36,
+    "package_purchase": true,
+    "timezone": "Europe/Brussels",
+    "version": 2
+  }
+]

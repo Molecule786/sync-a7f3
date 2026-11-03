@@ -1,0 +1,427 @@
+{
+  "basis": "IMF WEO October 2026; nominal GDP, current US dollars; 2026 estimates",
+  "source": "https://www.imf.org/external/datamapper/api/v1/NGDPD?periods=2026",
+  "countries": [
+    {
+      "rank": 1,
+      "iso3": "USA",
+      "country": "United States",
+      "gdp_usd_billions_2026": 32642.373,
+      "market_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        32,
+        34,
+        43,
+        44,
+        45,
+        46,
+        47,
+        49,
+        50,
+        59
+      ],
+      "coverage_status": "published_markets_found"
+    },
+    {
+      "rank": 2,
+      "iso3": "CHN",
+      "country": "China, People's Republic of",
+      "gdp_usd_billions_2026": 21546.403,
+      "market_ids": [],
+      "coverage_status": "not_in_published_catalogue_unverified"
+    },
+    {
+      "rank": 3,
+      "iso3": "DEU",
+      "country": "Germany",
+      "gdp_usd_billions_2026": 5471.299,
+      "market_ids": [
+        72
+      ],
+      "coverage_status": "published_markets_found"
+    },
+    {
+      "rank": 4,
+      "iso3": "JPN",
+      "country": "Japan",
+      "gdp_usd_billions_2026": 4341.986,
+      "market_ids": [
+        85
+      ],
+      "coverage_status": "published_markets_found"
+    },
+    {
+      "rank": 5,
+      "iso3": "GBR",
+      "country": "United Kingdom",
+      "gdp_usd_billions_2026": 4268.446,
+      "market_ids": [
+        35,
+        51,
+        52,
+        61
+      ],
+      "coverage_status": "published_markets_found"
+    },
+    {
+      "rank": 6,
+      "iso3": "IND",
+      "country": "India",
+      "gdp_usd_billions_2026": 4060.207,
+      "market_ids": [
+        84
+      ],
+      "coverage_status": "published_markets_found"
+    },
+    {
+      "rank": 7,
+      "iso3": "FRA",
+      "country": "France",
+      "gdp_usd_billions_2026": 3554.155,
+      "market_ids": [
+        74
+      ],
+      "coverage_status": "published_markets_found"
+    },
+    {
+      "rank": 8,
+      "iso3": "RUS",
+      "country": "Russian Federation",
+      "gdp_usd_billions_2026": 2861.156,
+      "market_ids": [],
+      "coverage_status": "not_in_published_catalogue_unverified"
+    },
+    {
+      "rank": 9,
+      "iso3": "ITA",
+      "country": "Italy",
+      "gdp_usd_billions_2026": 2701.737,
+      "market_ids": [],
+      "coverage_status": "not_in_published_catalogue_unverified"
+    },
+    {
+      "rank": 10,
+      "iso3": "BRA",
+      "country": "Brazil",
+      "gdp_usd_billions_2026": 2654.761,
+      "market_ids": [
+        90
+      ],
+      "coverage_status": "published_markets_found"
+    },
+    {
+      "rank": 11,
+      "iso3": "CAN",
+      "country": "Canada",
+      "gdp_usd_billions_2026": 2490.256,
+      "market_ids": [
+        36,
+        37,
+        48,
+        60
+      ],
+      "coverage_status": "published_markets_found"
+    },
+    {
+      "rank": 12,
+      "iso3": "KOR",
+      "country": "Korea, Republic of",
+      "gdp_usd_billions_2026": 2245.847,
+      "market_ids": [],
+      "coverage_status": "not_in_published_catalogue_unverified"
+    },
+    {
+      "rank": 13,
+      "iso3": "MEX",
+      "country": "Mexico",
+      "gdp_usd_billions_2026": 2176.236,
+      "market_ids": [],
+      "coverage_status": "not_in_published_catalogue_unverified"
+    },
+    {
+      "rank": 14,
+      "iso3": "AUS",
+      "country": "Australia",
+      "gdp_usd_billions_2026": 2110.657,
+      "market_ids": [
+        38,
+        39,
+        40,
+        41,
+        42,
+        62
+      ],
+      "coverage_status": "published_markets_found"
+    },
+    {
+      "rank": 15,
+      "iso3": "ESP",
+      "country": "Spain",
+      "gdp_usd_billions_2026": 2085.276,
+      "market_ids": [
+        76
+      ],
+      "coverage_status": "published_markets_found"
+    },
+    {
+      "rank": 16,
+      "iso3": "TUR",
+      "country": "T\u00fcrkiye, Republic of",
+      "gdp_usd_billions_2026": 1817.987,
+      "market_ids": [],
+      "coverage_status": "not_in_published_catalogue_unverified"
+    },
+    {
+      "rank": 17,
+      "iso3": "IDN",
+      "country": "Indonesia",
+      "gdp_usd_billions_2026": 1479.954,
+      "market_ids": [
+        82
+      ],
+      "coverage_status": "published_markets_found"
+    },
+    {
+      "rank": 18,
+      "iso3": "NLD",
+      "country": "Netherlands",
+      "gdp_usd_billions_2026": 1423.856,
+      "market_ids": [
+        67
+      ],
+      "coverage_status": "published_markets_found"
+    },
+    {
+      "rank": 19,
+      "iso3": "SAU",
+      "country": "Saudi Arabia",
+      "gdp_usd_billions_2026": 1343.346,
+      "market_ids": [],
+      "coverage_status": "not_in_published_catalogue_unverified"
+    },
+    {
+      "rank": 20,
+      "iso3": "CHE",
+      "country": "Switzerland",
+      "gdp_usd_billions_2026": 1135.739,
+      "market_ids": [
+        78
+      ],
+      "coverage_status": "published_markets_found"
+    },
+    {
+      "rank": 21,
+      "iso3": "POL",
+      "country": "Poland",
+      "gdp_usd_billions_2026": 1133.088,
+      "market_ids": [],
+      "coverage_status": "not_in_published_catalogue_unverified"
+    },
+    {
+      "rank": 22,
+      "iso3": "TWN",
+      "country": "Taiwan Province of China",
+      "gdp_usd_billions_2026": 1019.596,
+      "market_ids": [],
+      "coverage_status": "not_in_published_catalogue_unverified"
+    },
+    {
+      "rank": 23,
+      "iso3": "BEL",
+      "country": "Belgium",
+      "gdp_usd_billions_2026": 772.699,
+      "market_ids": [
+        93
+      ],
+      "coverage_status": "published_markets_found"
+    },
+    {
+      "rank": 24,
+      "iso3": "ARG",
+      "country": "Argentina",
+      "gdp_usd_billions_2026": 768.206,
+      "market_ids": [],
+      "coverage_status": "not_in_published_catalogue_unverified"
+    },
+    {
+      "rank": 25,
+      "iso3": "ISR",
+      "country": "Israel",
+      "gdp_usd_billions_2026": 746.982,
+      "market_ids": [],
+      "coverage_status": "not_in_published_catalogue_unverified"
+    },
+    {
+      "rank": 26,
+      "iso3": "SWE",
+      "country": "Sweden",
+      "gdp_usd_billions_2026": 745.081,
+      "market_ids": [
+        70
+      ],
+      "coverage_status": "published_markets_found"
+    },
+    {
+      "rank": 27,
+      "iso3": "IRL",
+      "country": "Ireland",
+      "gdp_usd_billions_2026": 709.972,
+      "market_ids": [
+        68
+      ],
+      "coverage_status": "published_markets_found"
+    },
+    {
+      "rank": 28,
+      "iso3": "SGP",
+      "country": "Singapore",
+      "gdp_usd_billions_2026": 667.889,
+      "market_ids": [
+        58
+      ],
+      "coverage_status": "published_markets_found"
+    },
+    {
+      "rank": 29,
+      "iso3": "ARE",
+      "country": "United Arab Emirates",
+      "gdp_usd_billions_2026": 661.018,
+      "market_ids": [
+        64
+      ],
+      "coverage_status": "published_markets_found"
+    },
+    {
+      "rank": 30,
+      "iso3": "NOR",
+      "country": "Norway",
+      "gdp_usd_billions_2026": 651.712,
+      "market_ids": [
+        69
+      ],
+      "coverage_status": "published_markets_found"
+    },
+    {
+      "rank": 31,
+      "iso3": "AUT",
+      "country": "Austria",
+      "gdp_usd_billions_2026": 616.896,
+      "market_ids": [
+        77
+      ],
+      "coverage_status": "published_markets_found"
+    },
+    {
+      "rank": 32,
+      "iso3": "THA",
+      "country": "Thailand",
+      "gdp_usd_billions_2026": 599.115,
+      "market_ids": [
+        71
+      ],
+      "coverage_status": "published_markets_found"
+    },
+    {
+      "rank": 33,
+      "iso3": "COL",
+      "country": "Colombia",
+      "gdp_usd_billions_2026": 572.735,
+      "market_ids": [],
+      "coverage_status": "not_in_published_catalogue_unverified"
+    },
+    {
+      "rank": 34,
+      "iso3": "MYS",
+      "country": "Malaysia",
+      "gdp_usd_billions_2026": 547.1,
+      "market_ids": [
+        73
+      ],
+      "coverage_status": "published_markets_found"
+    },
+    {
+      "rank": 35,
+      "iso3": "VNM",
+      "country": "Vietnam",
+      "gdp_usd_billions_2026": 542.13,
+      "market_ids": [],
+      "coverage_status": "not_in_published_catalogue_unverified"
+    },
+    {
+      "rank": 36,
+      "iso3": "BGD",
+      "country": "Bangladesh",
+      "gdp_usd_billions_2026": 506.357,
+      "market_ids": [],
+      "coverage_status": "not_in_published_catalogue_unverified"
+    },
+    {
+      "rank": 37,
+      "iso3": "PHL",
+      "country": "Philippines",
+      "gdp_usd_billions_2026": 501.692,
+      "market_ids": [
+        81
+      ],
+      "coverage_status": "published_markets_found"
+    },
+    {
+      "rank": 38,
+      "iso3": "DNK",
+      "country": "Denmark",
+      "gdp_usd_billions_2026": 499.354,
+      "market_ids": [
+        80
+      ],
+      "coverage_status": "published_markets_found"
+    },
+    {
+      "rank": 39,
+      "iso3": "ZAF",
+      "country": "South Africa",
+      "gdp_usd_billions_2026": 489.083,
+      "market_ids": [],
+      "coverage_status": "not_in_published_catalogue_unverified"
+    },
+    {
+      "rank": 40,
+      "iso3": "ROU",
+      "country": "Romania",
+      "gdp_usd_billions_2026": 470.091,
+      "market_ids": [],
+      "coverage_status": "not_in_published_catalogue_unverified"
+    }
+  ],
+  "selected_country_count": 40,
+  "countries_with_published_markets": 24,
+  "selected_market_count": 74
+}
