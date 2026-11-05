@@ -48,13 +48,14 @@ def recheck(shard):
         identity=before['event_id'].split(':')[1]
         try:
             source=client.json('GET','/_api/v1/schedules/'+identity)
-            row,status=session_row(source,country_map)
+            snapshots.append({'event_id':before['event_id'],'before':before,'source':source,
+                              'verified_at':datetime.now(timezone.utc).isoformat()})
+            row,status=session_row(source,country_map,existing_record=True)
             change=proposal(row,before,datetime.now(timezone.utc).isoformat(),source.get('id'))
             items.append(change)
-            snapshots.append({'event_id':before['event_id'],'before':before,'source':source,
-                              'verified_at':change['evidence']['verified_at']})
             checks.append({'event_id':before['event_id'],'source_state':status,'proposed_fields':list(change['patch']),
                            'availability':source.get('availability'),'source_starts_at':row['starts_at'],
+                           'source_verticals':source.get('verticals'),'source_activities':(source.get('class') or {}).get('activities'),
                            'source_ends_at':row['ends_at'],'verified_at':change['evidence']['verified_at']})
         except CollectionError as exc:
             checks.append({'event_id':before['event_id'],'source_state':'unverified_retained','error':str(exc)})

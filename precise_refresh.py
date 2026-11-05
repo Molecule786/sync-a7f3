@@ -37,12 +37,15 @@ def proposal(row,before,observed,session_id=None):
     return {'event_id':eid,'expected_before':before,'patch':patch,'reasons':reasons,
             'evidence':{'source':'classpass','session_id':identity,'verified_at':observed}}
 
-def session_row(item,markets):
+def session_row(item,markets,existing_record=False):
     venue=item.get('venue') or {};cls=item.get('class') or {};address=venue.get('address') or {}
     country=country_of(venue,markets)
     if not country or not isinstance(item.get('id'),int) or not venue.get('alias') or not cls.get('alias'):
         raise CollectionError('Unverified session identity/geography')
-    if 'activity' not in (item.get('verticals') or []) or cls.get('entity_type')!='CLASS':
+    # Existing stored sessions still need identity/time verification when the
+    # detail endpoint classifies a recovery class under another vertical.
+    # New discovery remains restricted to the source fitness vertical.
+    if cls.get('entity_type')!='CLASS' or (not existing_record and 'activity' not in (item.get('verticals') or [])):
         raise CollectionError('Not a scheduled fitness class')
     begins=datetime.fromtimestamp(item['starttime'],timezone.utc);ends=datetime.fromtimestamp(item['endtime'],timezone.utc)
     if ends<=begins:raise CollectionError('Invalid session duration')
