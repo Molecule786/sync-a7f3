@@ -1,0 +1,115 @@
+name: ClassPass precise live refresh - top 40 GDP
+on:
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: Full existing-record verification and all discovered top-40 country routes
+        type: choice
+        options: [all, existing_only, markets_only]
+        default: all
+permissions:
+  contents: read
+concurrency:
+  group: classpass-production-writer
+  cancel-in-progress: false
+jobs:
+  plan:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      shards: ${{ steps.existing.outputs.shards }}
+      markets: ${{ steps.markets.outputs.markets }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python -m unittest test_precise_refresh test_global
+      - id: existing
+        env:
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: python recheck_existing.py --plan
+      - id: markets
+        shell: python
+        run: |
+          import json,os
+          rows=json.load(open('global_markets.json',encoding='utf-8-sig'))
+          countries=json.load(open('global_scope.json'))['countries']
+          assert len(countries)==40 and len({c['iso3'] for c in countries})==40
+          assert {m['country_code'] for m in rows}<={c['iso3'] for c in countries}
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:f.write('markets='+json.dumps([m['id'] for m in rows])+'\n')
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as f:
+            f.write('All 40 countries remain in scope. Published/observed routes are searched; unavailable routes remain unresolved, never zero.\n')
+      - uses: actions/upload-artifact@v6
+        with:
+          name: existing-record-manifest
+          path: output/recheck-manifest.json
+          retention-days: 7
+  recheck:
+    needs: plan
+    if: inputs.scope != 'markets_only'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        shard: ${{ fromJSON(needs.plan.outputs.shards) }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: pip install -r requirements.txt
+      - uses: actions/download-artifact@v6
+        with:
+          name: existing-record-manifest
+          path: output
+      - name: Verify original source sessions and preserve unchanged fields
+        env:
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          SHARD: ${{ matrix.shard }}
+        run: python recheck_existing.py --shard "$SHARD"
+      - if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: source-recheck-${{ matrix.shard }}
+          path: output/recheck-${{ matrix.shard }}/
+          retention-days: 7
+  markets:
+    needs: [plan,recheck]
+    if: always() && needs.plan.result == 'success' && inputs.scope != 'existing_only'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 16
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        market: ${{ fromJSON(needs.plan.outputs.markets) }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Search current seven-day schedules and merge verified source changes
+        env:
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          MARKET: ${{ matrix.market }}
+        run: python refresh_market.py --market "$MARKET" --attempts 3
+      - if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: market-${{ matrix.market }}
+          path: output/global/${{ matrix.market }}/
+          retention-days: 7
