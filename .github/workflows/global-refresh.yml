@@ -41,7 +41,10 @@ jobs:
           countries=json.load(open('global_scope.json'))['countries']
           assert len(countries)==40 and len({c['iso3'] for c in countries})==40
           assert {m['country_code'] for m in rows}<={c['iso3'] for c in countries}
-          with open(os.environ['GITHUB_OUTPUT'],'a') as f:f.write('markets='+json.dumps([m['id'] for m in rows])+'\n')
+          first={}
+          for m in rows:first.setdefault(m['country_code'],m['id'])
+          selected=list(first.values())+[m['id'] for m in rows if m['id'] not in first.values()]
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:f.write('markets='+json.dumps(selected)+'\n')
           with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as f:
             f.write('All 40 countries remain in scope. Published/observed routes are searched; unavailable routes remain unresolved, never zero.\n')
       - uses: actions/upload-artifact@v6
@@ -56,7 +59,7 @@ jobs:
     timeout-minutes: 6
     strategy:
       fail-fast: false
-      max-parallel: 1
+      max-parallel: 2
       matrix:
         shard: ${{ fromJSON(needs.plan.outputs.shards) }}
     steps:
@@ -90,7 +93,7 @@ jobs:
     timeout-minutes: 16
     strategy:
       fail-fast: false
-      max-parallel: 1
+      max-parallel: 2
       matrix:
         market: ${{ fromJSON(needs.plan.outputs.markets) }}
     steps:
@@ -112,4 +115,31 @@ jobs:
         with:
           name: market-${{ matrix.market }}
           path: output/global/${{ matrix.market }}/
+          retention-days: 7
+  report:
+    needs: [plan,recheck,markets]
+    if: always() && needs.plan.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: pip install -r requirements.txt
+      - uses: actions/download-artifact@v6
+        with:
+          name: existing-record-manifest
+          path: output
+      - name: Reconcile all forty countries without hiding unresolved gaps
+        env:
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: python report_refresh.py
+      - uses: actions/upload-artifact@v6
+        with:
+          name: all-40-country-report
+          path: output/country-refresh-report.*
           retention-days: 7
