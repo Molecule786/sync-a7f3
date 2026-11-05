@@ -1,0 +1,26 @@
+name: Stop obsolete ClassPass runs
+on: workflow_dispatch
+permissions:
+  actions: write
+  contents: read
+jobs:
+  cancel:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - name: Force-cancel only the two superseded ClassPass runs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+        shell: python
+        run: |
+          import json,os,urllib.request,urllib.error
+          assert os.environ['REPOSITORY']=='Molecule786/sync-a7f3'
+          for run_id in [42013716682,42015284337]:
+              request=urllib.request.Request('https://api.github.com/repos/'+os.environ['REPOSITORY']+'/actions/runs/'+str(run_id)+'/force-cancel',
+                  data=b'',method='POST',headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'})
+              try:
+                  with urllib.request.urlopen(request,timeout=30) as response:print(run_id,response.status)
+              except urllib.error.HTTPError as error:
+                  if error.code!=409:raise
+                  print(run_id,'already finished')
