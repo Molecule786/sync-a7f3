@@ -12,12 +12,14 @@ from zoneinfo import ZoneInfo
 
 from collector import CollectionError
 from enrichment import class_details, session_details, studio_record
-from us_collector import PublicClient, first_directory, directory_module, save, slug, schedule_pages
+from us_collector import PublicClient, first_directory, directory_module, save, slug, schedule_pages, merge_venue_metadata
 from sync_state import RetryableError
 
 ISO2 = dict(zip(
     'ARE AUS AUT BEL BRA CAN CHE CHL DEU DNK ESP FIN FRA GBR HKG IDN IND IRL JPN KWT MYS NLD NOR NZL PHL PRT QAT SGP SWE THA USA'.split(),
     'AE AU AT BE BR CA CH CL DE DK ES FI FR GB HK ID IN IE JP KW MY NL NO NZ PH PT QA SG SE TH US'.split()))
+ISO2.update(dict(zip('CHN RUS ITA KOR MEX TUR SAU POL TWN ARG ISR COL VNM BGD ZAF ROU'.split(),
+                     'CN RU IT KR MX TR SA PL TW AR IL CO VN BD ZA RO'.split())))
 
 def country_of(venue, markets):
     direct = (venue.get('location') or {}).get('country_short_code')
@@ -58,6 +60,8 @@ def parse_global(item, market, markets, start, end, now):
            'zip': address.get('zip_code'),
            'url': f"https://classpass.com/classes/{venue['alias']}/{cls['alias']}/{item['id']}",
            'category': 'fitness'}
+    if str(venue.get('website') or '').startswith(('https://','http://')):
+        row['organizer_url']=venue['website']
     for key in ('lat', 'lon'):
         value = (venue.get('location') or {}).get(key)
         if isinstance(value, (int, float)):
@@ -101,7 +105,7 @@ def collect(market, markets, root, max_requests=150, profile_loader=None):
                                    json={'search_request':{'cursor':state['cursor']}, 'modules':['web_search_results_01']})
                 page = directory_module(data['data']['modules'])
             else:
-                path = client.json('GET', '/_api/unisearch/v1/search_url',
+                path = market.get('directory_path') or client.json('GET', '/_api/unisearch/v1/search_url',
                                    params={'tag_id':'activity', 'msa_id':market['id']}).get('url', '')
                 if not path.startswith('/search/') or '?' in path:
                     raise CollectionError('No verified fitness directory; not a confirmed zero')
@@ -130,6 +134,11 @@ def collect(market, markets, root, max_requests=150, profile_loader=None):
         venue_ids = sorted(int(v) for v in state['venues'])
         tz = ZoneInfo(market['timezone'])
         day, last = start.astimezone(tz).date(), (end-timedelta(microseconds=1)).astimezone(tz).date()
+        if market.get('country_wide_fallback'):
+            # A country route can span time zones. Request both edge dates;
+            # parse_global still enforces the exact UTC seven-day interval.
+            day -= timedelta(days=1)
+            last += timedelta(days=1)
         dates = []
         while day <= last:
             dates.append(day.isoformat())
@@ -142,11 +151,14 @@ def collect(market, markets, root, max_requests=150, profile_loader=None):
                 continue
             # Cache full studio profiles individually; avoid one ever-growing enrichment blob.
             profiles = {}
+            known_countries=state.setdefault('venue_countries',{})
             if profile_loader:
                 for studio in profile_loader(ids):
                     if studio.get('studio_id') in ids and studio.get('raw_profile'):
                         write_gzip(generation/'venues'/f"{studio['studio_id']}.json.gz", studio)
             for identity in ids:
+                if str(identity) in known_countries and known_countries[str(identity)] != ISO2[market['country_code']]:
+                    continue
                 path = generation/'venues'/f'{identity}.json.gz'
                 if path.exists():
                     profile = json.loads(gzip.decompress(path.read_bytes()))['raw_profile']
@@ -158,8 +170,14 @@ def collect(market, markets, root, max_requests=150, profile_loader=None):
                                            checked_at=datetime.now(timezone.utc).isoformat())
                     write_gzip(path, studio)
                 profiles[identity] = profile
-            rows, excluded, pages = {}, {}, 0
-            for items in schedule_pages(client, ids, date):
+                known_countries[str(identity)]=country_of(profile,markets)
+                save(state_path,state)
+            rows, excluded, pages, source_venues = {}, {}, 0, {}
+            eligible=[i for i in ids if i in profiles and country_of(profiles[i],markets)==ISO2[market['country_code']]]
+            unknown=[i for i in ids if i in profiles and country_of(profiles[i],markets) is None]
+            if unknown:
+                excluded['unknown_or_conflicting_country']=len(unknown)
+            for items in schedule_pages(client, eligible, date) if eligible else []:
                 pages += 1
                 for source in items:
                     item = dict(source)
@@ -172,7 +190,9 @@ def collect(market, markets, root, max_requests=150, profile_loader=None):
                     location = dict(profiles[source['venue']['id']].get('location') or {})
                     location.update(source['venue'].get('location') or {})
                     venue['location'] = location
+                    venue = merge_venue_metadata(venue, profiles[source['venue']['id']])
                     item['venue'] = venue
+                    source_venues[source['venue']['id']] = source['venue']
                     observed = datetime.now(timezone.utc)
                     row, reason = parse_global(item, market, markets, start, end, observed)
                     if row:
@@ -182,6 +202,10 @@ def collect(market, markets, root, max_requests=150, profile_loader=None):
                                                 'venue_source_id':source['venue']['id']}
                     else:
                         excluded[reason] = excluded.get(reason,0)+1
+            for identity, source_venue in source_venues.items():
+                path = generation/'venues'/f'{identity}.json.gz'
+                studio = json.loads(gzip.decompress(path.read_bytes()))
+                write_gzip(path,studio_record(identity,schedule=source_venue,previous=studio))
             write_gzip(generation/'tasks'/f'{key}.json.gz', list(rows.values()))
             state['tasks'][key] = {'rows':len(rows), 'pages':pages}
             for reason,count in excluded.items():

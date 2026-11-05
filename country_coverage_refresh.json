@@ -1,0 +1,901 @@
+{
+  "countries": [
+    {
+      "rank": 1,
+      "iso3": "USA",
+      "country": "United States",
+      "gdp_usd_billions_2026": 32642.373,
+      "market_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        32,
+        34,
+        43,
+        44,
+        45,
+        46,
+        47,
+        49,
+        50,
+        59
+      ],
+      "coverage_status": "published_markets_found",
+      "checked_at": "2026-11-05T10:29:13.585931+00:00",
+      "published_market_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        32,
+        34,
+        43,
+        44,
+        45,
+        46,
+        47,
+        49,
+        50,
+        59
+      ],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "published_markets_available"
+    },
+    {
+      "rank": 2,
+      "iso3": "CHN",
+      "country": "China, People's Republic of",
+      "gdp_usd_billions_2026": 21546.403,
+      "market_ids": [],
+      "coverage_status": "not_in_published_catalogue_unverified",
+      "checked_at": "2026-11-05T10:29:13.594891+00:00",
+      "published_market_ids": [],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "directory_exists_country_inventory_unverified",
+      "index_source": "https://classpass.com/search-index/china",
+      "fitness_directory_links": [
+        "/search/china/fitness"
+      ],
+      "directory_source": "https://classpass.com/search/china/fitness",
+      "unfiltered_directory_hits": 989,
+      "source_location": {
+        "lat": 35.86166,
+        "lon": 104.195397,
+        "locationName": "China",
+        "placeId": "ChIJwULG5WSOUDERbzafNHyqHZU",
+        "timezone": "Asia/Shanghai",
+        "calculatedRadiusKm": 3075.7,
+        "isMapSearch": false
+      },
+      "geography_samples": [
+        {
+          "studio_id": 299891,
+          "country": "TH"
+        },
+        {
+          "studio_id": 300034,
+          "country": "TH"
+        },
+        {
+          "studio_id": 301077,
+          "country": "PH"
+        }
+      ]
+    },
+    {
+      "rank": 3,
+      "iso3": "DEU",
+      "country": "Germany",
+      "gdp_usd_billions_2026": 5471.299,
+      "market_ids": [
+        72
+      ],
+      "coverage_status": "published_markets_found",
+      "checked_at": "2026-11-05T10:29:19.340584+00:00",
+      "published_market_ids": [
+        72
+      ],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "published_markets_available"
+    },
+    {
+      "rank": 4,
+      "iso3": "JPN",
+      "country": "Japan",
+      "gdp_usd_billions_2026": 4341.986,
+      "market_ids": [
+        85
+      ],
+      "coverage_status": "published_markets_found",
+      "checked_at": "2026-11-05T10:29:19.344880+00:00",
+      "published_market_ids": [
+        85
+      ],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "published_markets_available"
+    },
+    {
+      "rank": 5,
+      "iso3": "GBR",
+      "country": "United Kingdom",
+      "gdp_usd_billions_2026": 4268.446,
+      "market_ids": [
+        35,
+        51,
+        52,
+        61
+      ],
+      "coverage_status": "published_markets_found",
+      "checked_at": "2026-11-05T10:29:19.350035+00:00",
+      "published_market_ids": [
+        35,
+        51,
+        52,
+        61
+      ],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "published_markets_available"
+    },
+    {
+      "rank": 6,
+      "iso3": "IND",
+      "country": "India",
+      "gdp_usd_billions_2026": 4060.207,
+      "market_ids": [
+        84
+      ],
+      "coverage_status": "published_markets_found",
+      "checked_at": "2026-11-05T10:29:19.353790+00:00",
+      "published_market_ids": [
+        84
+      ],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "published_markets_available"
+    },
+    {
+      "rank": 7,
+      "iso3": "FRA",
+      "country": "France",
+      "gdp_usd_billions_2026": 3554.155,
+      "market_ids": [
+        74
+      ],
+      "coverage_status": "published_markets_found",
+      "checked_at": "2026-11-05T10:29:19.357097+00:00",
+      "published_market_ids": [
+        74
+      ],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "published_markets_available"
+    },
+    {
+      "rank": 8,
+      "iso3": "RUS",
+      "country": "Russian Federation",
+      "gdp_usd_billions_2026": 2861.156,
+      "market_ids": [],
+      "coverage_status": "not_in_published_catalogue_unverified",
+      "checked_at": "2026-11-05T10:29:19.359480+00:00",
+      "published_market_ids": [],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "no_fitness_directory_advertised_on_country_index",
+      "index_source": "https://classpass.com/search-index/russia",
+      "fitness_directory_links": []
+    },
+    {
+      "rank": 9,
+      "iso3": "ITA",
+      "country": "Italy",
+      "gdp_usd_billions_2026": 2701.737,
+      "market_ids": [],
+      "coverage_status": "not_in_published_catalogue_unverified",
+      "checked_at": "2026-11-05T10:29:20.463205+00:00",
+      "published_market_ids": [],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "directory_exists_country_inventory_unverified",
+      "index_source": "https://classpass.com/search-index/italy",
+      "fitness_directory_links": [
+        "/search/italy/fitness"
+      ],
+      "directory_source": "https://classpass.com/search/italy/fitness",
+      "unfiltered_directory_hits": 962,
+      "source_location": {
+        "lat": 41.87194,
+        "lon": 12.56738,
+        "locationName": "Italy",
+        "placeId": "ChIJA9KNRIL-1BIRb15jJFz1LOI",
+        "timezone": "Europe/Rome",
+        "calculatedRadiusKm": 761.9,
+        "isMapSearch": false
+      },
+      "geography_samples": [
+        {
+          "studio_id": 293266,
+          "country": "DE"
+        },
+        {
+          "studio_id": 293275,
+          "country": "DE"
+        },
+        {
+          "studio_id": 293265,
+          "country": "DE"
+        }
+      ]
+    },
+    {
+      "rank": 10,
+      "iso3": "BRA",
+      "country": "Brazil",
+      "gdp_usd_billions_2026": 2654.761,
+      "market_ids": [
+        90
+      ],
+      "coverage_status": "published_markets_found",
+      "checked_at": "2026-11-05T10:29:25.980154+00:00",
+      "published_market_ids": [
+        90
+      ],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "published_markets_available"
+    },
+    {
+      "rank": 11,
+      "iso3": "CAN",
+      "country": "Canada",
+      "gdp_usd_billions_2026": 2490.256,
+      "market_ids": [
+        36,
+        37,
+        48,
+        60
+      ],
+      "coverage_status": "published_markets_found",
+      "checked_at": "2026-11-05T10:29:25.987556+00:00",
+      "published_market_ids": [
+        36,
+        37,
+        48,
+        60
+      ],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "published_markets_available"
+    },
+    {
+      "rank": 12,
+      "iso3": "KOR",
+      "country": "Korea, Republic of",
+      "gdp_usd_billions_2026": 2245.847,
+      "market_ids": [],
+      "coverage_status": "not_in_published_catalogue_unverified",
+      "checked_at": "2026-11-05T10:29:25.993272+00:00",
+      "published_market_ids": [],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "no_fitness_directory_advertised_on_country_index",
+      "index_source": "https://classpass.com/search-index/south-korea",
+      "fitness_directory_links": []
+    },
+    {
+      "rank": 13,
+      "iso3": "MEX",
+      "country": "Mexico",
+      "gdp_usd_billions_2026": 2176.236,
+      "market_ids": [],
+      "coverage_status": "not_in_published_catalogue_unverified",
+      "checked_at": "2026-11-05T10:29:27.142215+00:00",
+      "published_market_ids": [],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "directory_exists_country_inventory_unverified",
+      "index_source": "https://classpass.com/search-index/mexico",
+      "fitness_directory_links": [
+        "/search/mexico/fitness"
+      ],
+      "directory_source": "https://classpass.com/search/mexico/fitness",
+      "unfiltered_directory_hits": 5224,
+      "source_location": {
+        "lat": 23.634501,
+        "lon": -102.552784,
+        "locationName": "Mexico",
+        "placeId": "ChIJU1NoiDs6BIQREZgJa760ZO0",
+        "timezone": "America/Mexico_City",
+        "calculatedRadiusKm": 1859,
+        "isMapSearch": false
+      },
+      "geography_samples": [
+        {
+          "studio_id": 226431,
+          "country": "US"
+        },
+        {
+          "studio_id": 107871,
+          "country": "US"
+        },
+        {
+          "studio_id": 105429,
+          "country": "US"
+        }
+      ]
+    },
+    {
+      "rank": 14,
+      "iso3": "AUS",
+      "country": "Australia",
+      "gdp_usd_billions_2026": 2110.657,
+      "market_ids": [
+        38,
+        39,
+        40,
+        41,
+        42,
+        62
+      ],
+      "coverage_status": "published_markets_found",
+      "checked_at": "2026-11-05T10:29:32.756343+00:00",
+      "published_market_ids": [
+        38,
+        39,
+        40,
+        41,
+        42,
+        62
+      ],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "published_markets_available"
+    },
+    {
+      "rank": 15,
+      "iso3": "ESP",
+      "country": "Spain",
+      "gdp_usd_billions_2026": 2085.276,
+      "market_ids": [
+        76
+      ],
+      "coverage_status": "published_markets_found",
+      "checked_at": "2026-11-05T10:29:32.762305+00:00",
+      "published_market_ids": [
+        76
+      ],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "published_markets_available"
+    },
+    {
+      "rank": 16,
+      "iso3": "TUR",
+      "country": "T\u00fcrkiye, Republic of",
+      "gdp_usd_billions_2026": 1817.987,
+      "market_ids": [],
+      "coverage_status": "not_in_published_catalogue_unverified",
+      "checked_at": "2026-11-05T10:29:32.767740+00:00",
+      "published_market_ids": [],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "no_fitness_directory_advertised_on_country_index",
+      "index_source": "https://classpass.com/search-index/turkey",
+      "fitness_directory_links": []
+    },
+    {
+      "rank": 17,
+      "iso3": "IDN",
+      "country": "Indonesia",
+      "gdp_usd_billions_2026": 1479.954,
+      "market_ids": [
+        82
+      ],
+      "coverage_status": "published_markets_found",
+      "checked_at": "2026-11-05T10:29:33.914527+00:00",
+      "published_market_ids": [
+        82
+      ],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "published_markets_available"
+    },
+    {
+      "rank": 18,
+      "iso3": "NLD",
+      "country": "Netherlands",
+      "gdp_usd_billions_2026": 1423.856,
+      "market_ids": [
+        67
+      ],
+      "coverage_status": "published_markets_found",
+      "checked_at": "2026-11-05T10:29:33.916931+00:00",
+      "published_market_ids": [
+        67
+      ],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "published_markets_available"
+    },
+    {
+      "rank": 19,
+      "iso3": "SAU",
+      "country": "Saudi Arabia",
+      "gdp_usd_billions_2026": 1343.346,
+      "market_ids": [],
+      "coverage_status": "not_in_published_catalogue_unverified",
+      "checked_at": "2026-11-05T10:29:33.920580+00:00",
+      "published_market_ids": [],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "directory_exists_country_inventory_unverified",
+      "index_source": "https://classpass.com/search-index/saudi-arabia",
+      "fitness_directory_links": [
+        "/search/saudi-arabia/fitness"
+      ],
+      "directory_source": "https://classpass.com/search/saudi-arabia/fitness",
+      "unfiltered_directory_hits": 601,
+      "source_location": {
+        "lat": 23.885942,
+        "lon": 45.079162,
+        "locationName": "Saudi Arabia",
+        "placeId": "ChIJQSqV5z-z5xURm7YawktQYFk",
+        "timezone": "Asia/Riyadh",
+        "calculatedRadiusKm": 1386.1,
+        "isMapSearch": false
+      },
+      "geography_samples": [
+        {
+          "studio_id": 301258,
+          "country": "AE"
+        },
+        {
+          "studio_id": 301261,
+          "country": "AE"
+        },
+        {
+          "studio_id": 298007,
+          "country": "QA"
+        }
+      ]
+    },
+    {
+      "rank": 20,
+      "iso3": "CHE",
+      "country": "Switzerland",
+      "gdp_usd_billions_2026": 1135.739,
+      "market_ids": [
+        78
+      ],
+      "coverage_status": "published_markets_found",
+      "checked_at": "2026-11-05T10:29:39.410583+00:00",
+      "published_market_ids": [
+        78
+      ],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "published_markets_available"
+    },
+    {
+      "rank": 21,
+      "iso3": "POL",
+      "country": "Poland",
+      "gdp_usd_billions_2026": 1133.088,
+      "market_ids": [],
+      "coverage_status": "not_in_published_catalogue_unverified",
+      "checked_at": "2026-11-05T10:29:39.419392+00:00",
+      "published_market_ids": [],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "directory_exists_country_inventory_unverified",
+      "index_source": "https://classpass.com/search-index/poland",
+      "fitness_directory_links": [
+        "/search/poland/fitness"
+      ],
+      "directory_source": "https://classpass.com/search/poland/fitness",
+      "unfiltered_directory_hits": 523,
+      "source_location": {
+        "lat": 51.919438,
+        "lon": 19.145136,
+        "locationName": "Poland",
+        "placeId": "ChIJuwtkpGSZAEcR6lXMScpzdQk",
+        "timezone": "Europe/Warsaw",
+        "calculatedRadiusKm": 469,
+        "isMapSearch": false
+      },
+      "geography_samples": [
+        {
+          "studio_id": 301008,
+          "country": "AT"
+        },
+        {
+          "studio_id": 299953,
+          "country": "AT"
+        },
+        {
+          "studio_id": 297695,
+          "country": "DE"
+        }
+      ]
+    },
+    {
+      "rank": 22,
+      "iso3": "TWN",
+      "country": "Taiwan Province of China",
+      "gdp_usd_billions_2026": 1019.596,
+      "market_ids": [],
+      "coverage_status": "not_in_published_catalogue_unverified",
+      "checked_at": "2026-11-05T10:29:45.244999+00:00",
+      "published_market_ids": [],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "no_fitness_directory_advertised_on_country_index",
+      "index_source": "https://classpass.com/search-index/taiwan",
+      "fitness_directory_links": []
+    },
+    {
+      "rank": 23,
+      "iso3": "BEL",
+      "country": "Belgium",
+      "gdp_usd_billions_2026": 772.699,
+      "market_ids": [
+        93
+      ],
+      "coverage_status": "published_markets_found",
+      "checked_at": "2026-11-05T10:29:46.380866+00:00",
+      "published_market_ids": [
+        93
+      ],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "published_markets_available"
+    },
+    {
+      "rank": 24,
+      "iso3": "ARG",
+      "country": "Argentina",
+      "gdp_usd_billions_2026": 768.206,
+      "market_ids": [],
+      "coverage_status": "not_in_published_catalogue_unverified",
+      "checked_at": "2026-11-05T10:29:46.387132+00:00",
+      "published_market_ids": [],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "directory_exists_country_inventory_unverified",
+      "index_source": "https://classpass.com/search-index/argentina",
+      "fitness_directory_links": [
+        "/search/argentina/fitness"
+      ],
+      "directory_source": "https://classpass.com/search/argentina/fitness",
+      "unfiltered_directory_hits": 737,
+      "source_location": {
+        "lat": -38.416097,
+        "lon": -63.61667199999999,
+        "locationName": "Argentina",
+        "placeId": "ChIJZ8b99fXKvJURqA_wKpl3Lz0",
+        "timezone": "America/Argentina/Salta",
+        "calculatedRadiusKm": 2080.8,
+        "isMapSearch": false
+      },
+      "geography_samples": [
+        {
+          "studio_id": 300542,
+          "country": "CL"
+        },
+        {
+          "studio_id": 301085,
+          "country": "CL"
+        },
+        {
+          "studio_id": 300422,
+          "country": "CL"
+        }
+      ]
+    },
+    {
+      "rank": 25,
+      "iso3": "ISR",
+      "country": "Israel",
+      "gdp_usd_billions_2026": 746.982,
+      "market_ids": [],
+      "coverage_status": "not_in_published_catalogue_unverified",
+      "checked_at": "2026-11-05T10:29:51.952117+00:00",
+      "published_market_ids": [],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "no_fitness_directory_advertised_on_country_index",
+      "index_source": "https://classpass.com/search-index/israel",
+      "fitness_directory_links": []
+    },
+    {
+      "rank": 26,
+      "iso3": "SWE",
+      "country": "Sweden",
+      "gdp_usd_billions_2026": 745.081,
+      "market_ids": [
+        70
+      ],
+      "coverage_status": "published_markets_found",
+      "checked_at": "2026-11-05T10:29:53.095762+00:00",
+      "published_market_ids": [
+        70
+      ],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "published_markets_available"
+    },
+    {
+      "rank": 27,
+      "iso3": "IRL",
+      "country": "Ireland",
+      "gdp_usd_billions_2026": 709.972,
+      "market_ids": [
+        68
+      ],
+      "coverage_status": "published_markets_found",
+      "checked_at": "2026-11-05T10:29:53.102401+00:00",
+      "published_market_ids": [
+        68
+      ],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "published_markets_available"
+    },
+    {
+      "rank": 28,
+      "iso3": "SGP",
+      "country": "Singapore",
+      "gdp_usd_billions_2026": 667.889,
+      "market_ids": [
+        58
+      ],
+      "coverage_status": "published_markets_found",
+      "checked_at": "2026-11-05T10:29:53.108411+00:00",
+      "published_market_ids": [
+        58
+      ],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "published_markets_available"
+    },
+    {
+      "rank": 29,
+      "iso3": "ARE",
+      "country": "United Arab Emirates",
+      "gdp_usd_billions_2026": 661.018,
+      "market_ids": [
+        64
+      ],
+      "coverage_status": "published_markets_found",
+      "checked_at": "2026-11-05T10:29:53.114128+00:00",
+      "published_market_ids": [
+        64
+      ],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "published_markets_available"
+    },
+    {
+      "rank": 30,
+      "iso3": "NOR",
+      "country": "Norway",
+      "gdp_usd_billions_2026": 651.712,
+      "market_ids": [
+        69
+      ],
+      "coverage_status": "published_markets_found",
+      "checked_at": "2026-11-05T10:29:53.119971+00:00",
+      "published_market_ids": [
+        69
+      ],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "published_markets_available"
+    },
+    {
+      "rank": 31,
+      "iso3": "AUT",
+      "country": "Austria",
+      "gdp_usd_billions_2026": 616.896,
+      "market_ids": [
+        77
+      ],
+      "coverage_status": "published_markets_found",
+      "checked_at": "2026-11-05T10:29:53.127080+00:00",
+      "published_market_ids": [
+        77
+      ],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "published_markets_available"
+    },
+    {
+      "rank": 32,
+      "iso3": "THA",
+      "country": "Thailand",
+      "gdp_usd_billions_2026": 599.115,
+      "market_ids": [
+        71
+      ],
+      "coverage_status": "published_markets_found",
+      "checked_at": "2026-11-05T10:29:53.134579+00:00",
+      "published_market_ids": [
+        71
+      ],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "published_markets_available"
+    },
+    {
+      "rank": 33,
+      "iso3": "COL",
+      "country": "Colombia",
+      "gdp_usd_billions_2026": 572.735,
+      "market_ids": [],
+      "coverage_status": "not_in_published_catalogue_unverified",
+      "checked_at": "2026-11-05T10:29:53.142819+00:00",
+      "published_market_ids": [],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "no_fitness_directory_advertised_on_country_index",
+      "index_source": "https://classpass.com/search-index/colombia",
+      "fitness_directory_links": []
+    },
+    {
+      "rank": 34,
+      "iso3": "MYS",
+      "country": "Malaysia",
+      "gdp_usd_billions_2026": 547.1,
+      "market_ids": [
+        73
+      ],
+      "coverage_status": "published_markets_found",
+      "checked_at": "2026-11-05T10:29:54.212719+00:00",
+      "published_market_ids": [
+        73
+      ],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "published_markets_available"
+    },
+    {
+      "rank": 35,
+      "iso3": "VNM",
+      "country": "Vietnam",
+      "gdp_usd_billions_2026": 542.13,
+      "market_ids": [],
+      "coverage_status": "not_in_published_catalogue_unverified",
+      "checked_at": "2026-11-05T10:29:54.218280+00:00",
+      "published_market_ids": [],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "directory_exists_country_inventory_unverified",
+      "index_source": "https://classpass.com/search-index/vietnam",
+      "fitness_directory_links": [
+        "/search/vietnam/fitness"
+      ],
+      "directory_source": "https://classpass.com/search/vietnam/fitness",
+      "unfiltered_directory_hits": 282,
+      "source_location": {
+        "lat": 14.058324,
+        "lon": 108.277199,
+        "locationName": "Vietnam",
+        "placeId": "ChIJXx5qc016FTERvmL-4smwO7A",
+        "timezone": "Asia/Saigon",
+        "calculatedRadiusKm": 1048.4,
+        "isMapSearch": false
+      },
+      "geography_samples": [
+        {
+          "studio_id": 299891,
+          "country": "TH"
+        },
+        {
+          "studio_id": 300034,
+          "country": "TH"
+        },
+        {
+          "studio_id": 300748,
+          "country": "TH"
+        }
+      ]
+    },
+    {
+      "rank": 36,
+      "iso3": "BGD",
+      "country": "Bangladesh",
+      "gdp_usd_billions_2026": 506.357,
+      "market_ids": [],
+      "coverage_status": "not_in_published_catalogue_unverified",
+      "checked_at": "2026-11-05T10:29:59.992238+00:00",
+      "published_market_ids": [],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "access_or_source_gap",
+      "error": "Source HTTP 404"
+    },
+    {
+      "rank": 37,
+      "iso3": "PHL",
+      "country": "Philippines",
+      "gdp_usd_billions_2026": 501.692,
+      "market_ids": [
+        81
+      ],
+      "coverage_status": "published_markets_found",
+      "checked_at": "2026-11-05T10:30:01.117187+00:00",
+      "published_market_ids": [
+        81
+      ],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "published_markets_available"
+    },
+    {
+      "rank": 38,
+      "iso3": "DNK",
+      "country": "Denmark",
+      "gdp_usd_billions_2026": 499.354,
+      "market_ids": [
+        80
+      ],
+      "coverage_status": "published_markets_found",
+      "checked_at": "2026-11-05T10:30:01.123414+00:00",
+      "published_market_ids": [
+        80
+      ],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "published_markets_available"
+    },
+    {
+      "rank": 39,
+      "iso3": "ZAF",
+      "country": "South Africa",
+      "gdp_usd_billions_2026": 489.083,
+      "market_ids": [],
+      "coverage_status": "not_in_published_catalogue_unverified",
+      "checked_at": "2026-11-05T10:30:01.130548+00:00",
+      "published_market_ids": [],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "no_fitness_directory_advertised_on_country_index",
+      "index_source": "https://classpass.com/search-index/south-africa",
+      "fitness_directory_links": []
+    },
+    {
+      "rank": 40,
+      "iso3": "ROU",
+      "country": "Romania",
+      "gdp_usd_billions_2026": 470.091,
+      "market_ids": [],
+      "coverage_status": "not_in_published_catalogue_unverified",
+      "checked_at": "2026-11-05T10:30:02.379013+00:00",
+      "published_market_ids": [],
+      "country_list_source": "https://classpass.com/terms/countries",
+      "status": "access_or_source_gap",
+      "error": "Source HTTP 404"
+    }
+  ],
+  "finished": true,
+  "source_requests": 46
+}

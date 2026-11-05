@@ -1,4 +1,4 @@
-"""Isolated worldwide runner; production events is never an allowed target."""
+"""Worldwide runner with an explicit field-preserving production mode."""
 import argparse
 import base64
 import gzip
@@ -10,6 +10,7 @@ from curl_cffi import requests
 from collector import CollectionError
 from global_collector import ISO2, collect, country_of
 from us_collector import save
+from precise_refresh import proposal
 
 ROOT = Path(__file__).resolve().parent
 CONFIG = json.loads((ROOT/'config.json').read_text())
@@ -23,21 +24,32 @@ def database(method, resource, payload=None, params=None):
         headers['Authorization'] = 'Bearer '+secret
     # Fixed allowlist; no production resource or production RPC can be selected.
     if resource not in ('venues_global_test','events_global_test','directory_jobs_global_test',
-                        'rpc/sync_directory_global_test','rpc/directory_global_test_health'):
+                        'rpc/sync_directory_global_test','rpc/directory_global_test_health',
+                        'rpc/refresh_classpass_precise','events'):
         raise CollectionError('Forbidden database target')
+    if resource=='events' and method!='GET':
+        raise CollectionError('Direct event writes are forbidden; use the compare-and-swap merge')
     response = requests.request(method,CONFIG['supabase_url']+'/rest/v1/'+resource,headers=headers,
                                 json=payload,params=params,timeout=30)
     if not 200 <= response.status_code < 300:
         raise CollectionError(f'Isolated database request failed (HTTP {response.status_code}); inspect capacity/grants')
     return response.json() if response.content else None
 
-def run(market, markets, maximum):
+def merge_precise(records):
+    ids=[r['event']['event_id'] for r in records]
+    current=database('GET','events',params={'source':'eq.classpass','event_id':'in.('+','.join(ids)+')','select':'*'}) if ids else []
+    before={r['event_id']:r for r in current}
+    items=[proposal(r['event'],before.get(r['event']['event_id']),r['observed_at']) for r in records]
+    return database('POST','rpc/refresh_classpass_precise',{'p_items':items})
+
+def run(market, markets, maximum, production=False):
     root = ROOT/'output/global'/str(market['id'])
     root.mkdir(parents=True,exist_ok=True)
     health = database('POST','rpc/directory_global_test_health',{})
     if not health.get('can_collect'):
         raise CollectionError('350 MiB database guard: collection stopped before source requests')
-    previous = database('GET','directory_jobs_global_test',params={'source':'eq.classpass','market_id':'eq.'+str(market['id']),'select':'compressed_state'})
+    source_key='classpass-production' if production else 'classpass'
+    previous = database('GET','directory_jobs_global_test',params={'source':'eq.'+source_key,'market_id':'eq.'+str(market['id']),'select':'compressed_state'})
     if previous and previous[0].get('compressed_state'):
         raw = gzip.decompress(base64.b64decode(previous[0]['compressed_state']))
         if len(raw)>8*1024*1024:
@@ -61,7 +73,8 @@ def run(market, markets, maximum):
         studio = json.loads(gzip.decompress(path.read_bytes()))
         if country_of(studio.get('raw_profile') or {},markets)==country:
             venues.append(studio)
-    inserted = updated = processed = 0
+    inserted = updated = processed = unchanged = conflicts = 0
+    audits=[]
     for i in range(0,len(venues),50):
         database('POST','rpc/sync_directory_global_test',{'p_market':market['id'],'p_country':country,
                  'p_venues':venues[i:i+50],'p_events':[]})
@@ -73,21 +86,29 @@ def run(market, markets, maximum):
             continue
         rows = json.loads(gzip.decompress(path.read_bytes()))
         for i in range(0,len(rows),250):
-            result = database('POST','rpc/sync_directory_global_test',{'p_market':market['id'],
-                    'p_country':country,'p_venues':[],'p_events':rows[i:i+250]})
-            if result.get('target')!='events_global_test':
-                raise CollectionError('Wrong isolated database target')
-            inserted += result['inserted']; updated += result['updated']; processed += result['processed']
+            chunk=rows[i:i+250]
+            result = merge_precise(chunk) if production else database('POST','rpc/sync_directory_global_test',{'p_market':market['id'],
+                    'p_country':country,'p_venues':[],'p_events':chunk})
+            if result.get('target')!=('events' if production else 'events_global_test'):
+                raise CollectionError('Wrong database target')
+            inserted += result['inserted']; updated += result['updated']; processed += len(chunk)
+            unchanged+=result.get('unchanged',0);conflicts+=result.get('conflicts_skipped',0)
+            audits.extend(result.get('audit',[]))
         task['exported'] = True
         save(root/'checkpoint.json',state)
-    summary.update(target='events_global_test',processed_this_attempt=processed,inserted=inserted,updated=updated,
+    summary.pop('database_writes',None)
+    summary.update(target='events' if production else 'events_global_test',processed_this_attempt=processed,inserted=inserted,updated=updated,
+                   unchanged=unchanged,conflicts_skipped=conflicts,
                    venues_saved_this_attempt=len(venues),github_run_id=os.environ.get('GITHUB_RUN_ID'),
-                   production_write_calls=0)
+                   production_write_enabled=production)
+    audit_path=root/'change-audit.json'
+    previous_audit=json.loads(audit_path.read_text(encoding='utf-8')) if audit_path.exists() else []
+    save(audit_path,previous_audit+audits)
     # Future run restores the compact job manifest; source task payloads are in database/artifacts.
     packed = base64.b64encode(gzip.compress(json.dumps(state,ensure_ascii=False).encode('utf-8'),mtime=0)).decode('ascii')
     if len(packed)>8*1024*1024:
         raise CollectionError('Global checkpoint exceeds isolated storage budget')
-    database('POST','directory_jobs_global_test',{'source':'classpass','market_id':market['id'],
+    database('POST','directory_jobs_global_test',{'source':source_key,'market_id':market['id'],
              'country':country,'compressed_state':packed,'stats':summary,
              'updated_at':datetime.now(timezone.utc).isoformat()},params={'on_conflict':'source,market_id'})
     save(root/'summary.json',summary)
@@ -97,15 +118,16 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--market',type=int,required=True)
     parser.add_argument('--max-requests',type=int,default=150)
+    parser.add_argument('--write-production',action='store_true')
     args = parser.parse_args()
     if not 1<=args.max_requests<=150:
         parser.error('Request budget must be 1 to 150')
     all_markets = json.loads((ROOT/'global_markets.json').read_text(encoding='utf-8'))
     market = next(m for m in all_markets if m['id']==args.market)
     try:
-        result = run(market,{m['id']:m['country_code'] for m in all_markets},args.max_requests)
+        result = run(market,{m['id']:m['country_code'] for m in all_markets},args.max_requests,args.write_production)
     except Exception as exc:
-        result = {'status':'failed','market_id':args.market,'production_write_calls':0,
+        result = {'status':'failed','market_id':args.market,'production_write_enabled':args.write_production,
                   'error':str(exc) if isinstance(exc,CollectionError) else type(exc).__name__}
         save(ROOT/'output/global'/str(args.market)/'summary.json',result)
     print(json.dumps(result))
@@ -117,3 +139,4 @@ def main():
 
 if __name__=='__main__':
     main()
+

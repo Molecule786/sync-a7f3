@@ -608,6 +608,203 @@
     "version": 1
   },
   {
+    "id": 43,
+    "name": "New Orleans Metro",
+    "alias": "new-orleans",
+    "city": "New Orleans",
+    "default_location": {
+      "lat": 29.950836181640625,
+      "lon": -90.07559204101562,
+      "zoom_level": 12
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 75,
+    "package_purchase": true,
+    "timezone": "America/Chicago",
+    "version": 1
+  },
+  {
+    "id": 44,
+    "name": "San Antonio Metro",
+    "alias": "san-antonio",
+    "city": "San Antonio",
+    "default_location": {
+      "lat": 29.42841911315918,
+      "lon": -98.48699188232422,
+      "zoom_level": 12
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 75,
+    "package_purchase": true,
+    "timezone": "America/Chicago",
+    "version": 1
+  },
+  {
+    "id": 45,
+    "name": "Indianapolis Metro",
+    "alias": "indianapolis",
+    "city": "Indianapolis",
+    "default_location": {
+      "lat": 39.768856048583984,
+      "lon": -86.159912109375,
+      "zoom_level": 11
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 75,
+    "package_purchase": true,
+    "timezone": "America/New_York",
+    "version": 1
+  },
+  {
+    "id": 46,
+    "name": "Salt Lake City Metro",
+    "alias": "salt-lake-city",
+    "city": "Salt Lake City",
+    "default_location": {
+      "lat": 40.762882232666016,
+      "lon": -111.8968276977539,
+      "zoom_level": 11
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 75,
+    "package_purchase": true,
+    "timezone": "America/Denver",
+    "version": 1
+  },
+  {
+    "id": 47,
+    "name": "Honolulu Metro",
+    "alias": "honolulu",
+    "city": "Honolulu",
+    "default_location": {
+      "lat": 21.30961799621582,
+      "lon": -157.85995483398438,
+      "zoom_level": 13
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 75,
+    "package_purchase": true,
+    "timezone": "Pacific/Honolulu",
+    "version": 1
+  },
+  {
+    "id": 49,
+    "name": "Inland Empire Metro",
+    "alias": "inland-empire",
+    "city": "Inland Empire",
+    "default_location": {
+      "lat": 33.986549377441406,
+      "lon": -117.3792724609375,
+      "zoom_level": 11
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 75,
+    "package_purchase": true,
+    "timezone": "America/Los_Angeles",
+    "version": 1
+  },
+  {
+    "id": 50,
+    "name": "Missoula Metro",
+    "alias": "missoula",
+    "city": "Missoula",
+    "default_location": {
+      "lat": 46.871551513671875,
+      "lon": -113.99417877197266,
+      "zoom_level": 13
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "price": 75,
+    "package_purchase": true,
+    "timezone": "America/Denver",
+    "version": 1
+  },
+  {
+    "id": 59,
+    "name": "United States",
+    "alias": "united-states",
+    "city": "United States",
+    "default_location": {
+      "lat": 40.735862731933594,
+      "lon": -73.99108123779297,
+      "zoom_level": 13
+    },
+    "currency_code": "usd",
+    "currency_format": "$",
+    "country_code": "USA",
+    "country_id": 1,
+    "package_purchase": true,
+    "timezone": "America/Denver",
+    "version": 2
+  },
+  {
+    "id": 10002,
+    "name": "China, People's Republic of",
+    "alias": "china",
+    "country_code": "CHN",
+    "timezone": "Asia/Shanghai",
+    "directory_path": "/search/china/fitness",
+    "country_wide_fallback": true,
+    "source": "https://classpass.com/search-index/china"
+  },
+  {
+    "id": 72,
+    "name": "Germany",
+    "alias": "germany",
+    "city": "Germany",
+    "default_location": {
+      "lat": 51.16569137573242,
+      "lon": 10.451525688171387,
+      "zoom_level": 13
+    },
+    "currency_code": "eur",
+    "currency_format": "\u20ac",
+    "country_code": "DEU",
+    "country_id": 15,
+    "package_purchase": true,
+    "timezone": "Europe/Berlin",
+    "version": 2
+  },
+  {
+    "id": 85,
+    "name": "Japan",
+    "alias": "japan",
+    "city": "Japan",
+    "default_location": {
+      "lat": 35.70922088623047,
+      "lon": 139.73190307617188,
+      "zoom_level": 13
+    },
+    "currency_code": "jpy",
+    "currency_format": "\u00a5",
+    "country_code": "JPN",
+    "country_id": 28,
+    "package_purchase": true,
+    "timezone": "Asia/Tokyo",
+    "version": 2
+  },
+  {
     "id": 35,
     "name": "London Metro",
     "alias": "london",
@@ -618,13 +815,133 @@
       "zoom_level": 11
     },
     "currency_code": "gbp",
-    "currency_format": "£",
+    "currency_format": "\u00a3",
     "country_code": "GBR",
     "country_id": 3,
     "price": 55,
     "package_purchase": true,
     "timezone": "Europe/London",
     "version": 1
+  },
+  {
+    "id": 51,
+    "name": "Manchester Metro",
+    "alias": "manchester",
+    "city": "Manchester",
+    "default_location": {
+      "lat": 53.48239517211914,
+      "lon": -2.2426788806915283,
+      "zoom_level": 13
+    },
+    "currency_code": "gbp",
+    "currency_format": "\u00a3",
+    "country_code": "GBR",
+    "country_id": 3,
+    "price": 75,
+    "package_purchase": true,
+    "timezone": "Europe/London",
+    "version": 1
+  },
+  {
+    "id": 52,
+    "name": "Bristol Metro",
+    "alias": "bristol",
+    "city": "Bristol",
+    "default_location": {
+      "lat": 51.45771408081055,
+      "lon": -2.589116334915161,
+      "zoom_level": 13
+    },
+    "currency_code": "gbp",
+    "currency_format": "\u00a3",
+    "country_code": "GBR",
+    "country_id": 3,
+    "price": 75,
+    "package_purchase": true,
+    "timezone": "Europe/London",
+    "version": 1
+  },
+  {
+    "id": 61,
+    "name": "United Kingdom",
+    "alias": "united-kingdom",
+    "city": "United Kingdom",
+    "default_location": {
+      "lat": 51.53126907348633,
+      "lon": -0.15696939826011658,
+      "zoom_level": 13
+    },
+    "currency_code": "gbp",
+    "currency_format": "\u00a3",
+    "country_code": "GBR",
+    "country_id": 3,
+    "package_purchase": true,
+    "timezone": "Europe/London",
+    "version": 2
+  },
+  {
+    "id": 84,
+    "name": "India",
+    "alias": "india",
+    "city": "India",
+    "default_location": {
+      "lat": 19.084749221801758,
+      "lon": 72.87088775634766,
+      "zoom_level": 13
+    },
+    "currency_code": "inr",
+    "currency_format": "\u20b9",
+    "country_code": "IND",
+    "country_id": 27,
+    "package_purchase": true,
+    "timezone": "Asia/Kolkata",
+    "version": 2
+  },
+  {
+    "id": 74,
+    "name": "France",
+    "alias": "france",
+    "city": "France",
+    "default_location": {
+      "lat": 48.85872268676758,
+      "lon": 2.346428632736206,
+      "zoom_level": 13
+    },
+    "currency_code": "eur",
+    "currency_format": "\u20ac",
+    "country_code": "FRA",
+    "country_id": 17,
+    "package_purchase": true,
+    "timezone": "Europe/Paris",
+    "version": 2
+  },
+  {
+    "id": 10009,
+    "name": "Italy",
+    "alias": "italy",
+    "country_code": "ITA",
+    "timezone": "Europe/Rome",
+    "directory_path": "/search/italy/fitness",
+    "country_wide_fallback": true,
+    "source": "https://classpass.com/search-index/italy"
+  },
+  {
+    "id": 90,
+    "name": "Brazil",
+    "alias": "brazil",
+    "city": "Brazil",
+    "default_location": {
+      "lat": -23.5455322265625,
+      "lon": -46.629920959472656,
+      "zoom_level": 13
+    },
+    "currency_code": "brl",
+    "currency_format": "R$",
+    "country_code": "BRA",
+    "country_id": 33,
+    "package_purchase": true,
+    "timezone": "America/Sao_Paulo",
+    "version": 2
   },
   {
     "id": 36,
@@ -663,6 +980,53 @@
     "package_purchase": true,
     "timezone": "America/Phoenix",
     "version": 1
+  },
+  {
+    "id": 48,
+    "name": "Calgary Metro",
+    "alias": "calgary",
+    "city": "Calgary",
+    "default_location": {
+      "lat": 51.04780960083008,
+      "lon": -114.05926513671875,
+      "zoom_level": 13
+    },
+    "currency_code": "cad",
+    "currency_format": "C$",
+    "country_code": "CAN",
+    "country_id": 2,
+    "price": 75,
+    "package_purchase": true,
+    "timezone": "America/Regina",
+    "version": 1
+  },
+  {
+    "id": 60,
+    "name": "Canada",
+    "alias": "canada",
+    "city": "Canada",
+    "default_location": {
+      "lat": 43.652503967285156,
+      "lon": -79.38356018066406,
+      "zoom_level": 13
+    },
+    "currency_code": "cad",
+    "currency_format": "C$",
+    "country_code": "CAN",
+    "country_id": 2,
+    "package_purchase": true,
+    "timezone": "America/New_York",
+    "version": 2
+  },
+  {
+    "id": 10013,
+    "name": "Mexico",
+    "alias": "mexico",
+    "country_code": "MEX",
+    "timezone": "America/Mexico_City",
+    "directory_path": "/search/mexico/fitness",
+    "country_wide_fallback": true,
+    "source": "https://classpass.com/search-index/mexico"
   },
   {
     "id": 38,
@@ -760,268 +1124,6 @@
     "version": 1
   },
   {
-    "id": 43,
-    "name": "New Orleans Metro",
-    "alias": "new-orleans",
-    "city": "New Orleans",
-    "default_location": {
-      "lat": 29.950836181640625,
-      "lon": -90.07559204101562,
-      "zoom_level": 12
-    },
-    "currency_code": "usd",
-    "currency_format": "$",
-    "country_code": "USA",
-    "country_id": 1,
-    "price": 75,
-    "package_purchase": true,
-    "timezone": "America/Chicago",
-    "version": 1
-  },
-  {
-    "id": 44,
-    "name": "San Antonio Metro",
-    "alias": "san-antonio",
-    "city": "San Antonio",
-    "default_location": {
-      "lat": 29.42841911315918,
-      "lon": -98.48699188232422,
-      "zoom_level": 12
-    },
-    "currency_code": "usd",
-    "currency_format": "$",
-    "country_code": "USA",
-    "country_id": 1,
-    "price": 75,
-    "package_purchase": true,
-    "timezone": "America/Chicago",
-    "version": 1
-  },
-  {
-    "id": 45,
-    "name": "Indianapolis Metro",
-    "alias": "indianapolis",
-    "city": "Indianapolis",
-    "default_location": {
-      "lat": 39.768856048583984,
-      "lon": -86.159912109375,
-      "zoom_level": 11
-    },
-    "currency_code": "usd",
-    "currency_format": "$",
-    "country_code": "USA",
-    "country_id": 1,
-    "price": 75,
-    "package_purchase": true,
-    "timezone": "America/New_York",
-    "version": 1
-  },
-  {
-    "id": 46,
-    "name": "Salt Lake City Metro",
-    "alias": "salt-lake-city",
-    "city": "Salt Lake City",
-    "default_location": {
-      "lat": 40.762882232666016,
-      "lon": -111.8968276977539,
-      "zoom_level": 11
-    },
-    "currency_code": "usd",
-    "currency_format": "$",
-    "country_code": "USA",
-    "country_id": 1,
-    "price": 75,
-    "package_purchase": true,
-    "timezone": "America/Denver",
-    "version": 1
-  },
-  {
-    "id": 47,
-    "name": "Honolulu Metro",
-    "alias": "honolulu",
-    "city": "Honolulu",
-    "default_location": {
-      "lat": 21.30961799621582,
-      "lon": -157.85995483398438,
-      "zoom_level": 13
-    },
-    "currency_code": "usd",
-    "currency_format": "$",
-    "country_code": "USA",
-    "country_id": 1,
-    "price": 75,
-    "package_purchase": true,
-    "timezone": "Pacific/Honolulu",
-    "version": 1
-  },
-  {
-    "id": 48,
-    "name": "Calgary Metro",
-    "alias": "calgary",
-    "city": "Calgary",
-    "default_location": {
-      "lat": 51.04780960083008,
-      "lon": -114.05926513671875,
-      "zoom_level": 13
-    },
-    "currency_code": "cad",
-    "currency_format": "C$",
-    "country_code": "CAN",
-    "country_id": 2,
-    "price": 75,
-    "package_purchase": true,
-    "timezone": "America/Regina",
-    "version": 1
-  },
-  {
-    "id": 49,
-    "name": "Inland Empire Metro",
-    "alias": "inland-empire",
-    "city": "Inland Empire",
-    "default_location": {
-      "lat": 33.986549377441406,
-      "lon": -117.3792724609375,
-      "zoom_level": 11
-    },
-    "currency_code": "usd",
-    "currency_format": "$",
-    "country_code": "USA",
-    "country_id": 1,
-    "price": 75,
-    "package_purchase": true,
-    "timezone": "America/Los_Angeles",
-    "version": 1
-  },
-  {
-    "id": 50,
-    "name": "Missoula Metro",
-    "alias": "missoula",
-    "city": "Missoula",
-    "default_location": {
-      "lat": 46.871551513671875,
-      "lon": -113.99417877197266,
-      "zoom_level": 13
-    },
-    "currency_code": "usd",
-    "currency_format": "$",
-    "country_code": "USA",
-    "country_id": 1,
-    "price": 75,
-    "package_purchase": true,
-    "timezone": "America/Denver",
-    "version": 1
-  },
-  {
-    "id": 51,
-    "name": "Manchester Metro",
-    "alias": "manchester",
-    "city": "Manchester",
-    "default_location": {
-      "lat": 53.48239517211914,
-      "lon": -2.2426788806915283,
-      "zoom_level": 13
-    },
-    "currency_code": "gbp",
-    "currency_format": "£",
-    "country_code": "GBR",
-    "country_id": 3,
-    "price": 75,
-    "package_purchase": true,
-    "timezone": "Europe/London",
-    "version": 1
-  },
-  {
-    "id": 52,
-    "name": "Bristol Metro",
-    "alias": "bristol",
-    "city": "Bristol",
-    "default_location": {
-      "lat": 51.45771408081055,
-      "lon": -2.589116334915161,
-      "zoom_level": 13
-    },
-    "currency_code": "gbp",
-    "currency_format": "£",
-    "country_code": "GBR",
-    "country_id": 3,
-    "price": 75,
-    "package_purchase": true,
-    "timezone": "Europe/London",
-    "version": 1
-  },
-  {
-    "id": 58,
-    "name": "Singapore",
-    "alias": "singapore",
-    "city": "Singapore",
-    "default_location": {
-      "lat": 1.2902699708938599,
-      "lon": 103.85195922851562,
-      "zoom_level": 13
-    },
-    "currency_code": "sgd",
-    "currency_format": "$",
-    "country_code": "SGP",
-    "country_id": 5,
-    "package_purchase": true,
-    "timezone": "Asia/Singapore",
-    "version": 2
-  },
-  {
-    "id": 59,
-    "name": "United States",
-    "alias": "united-states",
-    "city": "United States",
-    "default_location": {
-      "lat": 40.735862731933594,
-      "lon": -73.99108123779297,
-      "zoom_level": 13
-    },
-    "currency_code": "usd",
-    "currency_format": "$",
-    "country_code": "USA",
-    "country_id": 1,
-    "package_purchase": true,
-    "timezone": "America/Denver",
-    "version": 2
-  },
-  {
-    "id": 60,
-    "name": "Canada",
-    "alias": "canada",
-    "city": "Canada",
-    "default_location": {
-      "lat": 43.652503967285156,
-      "lon": -79.38356018066406,
-      "zoom_level": 13
-    },
-    "currency_code": "cad",
-    "currency_format": "C$",
-    "country_code": "CAN",
-    "country_id": 2,
-    "package_purchase": true,
-    "timezone": "America/New_York",
-    "version": 2
-  },
-  {
-    "id": 61,
-    "name": "United Kingdom",
-    "alias": "united-kingdom",
-    "city": "United Kingdom",
-    "default_location": {
-      "lat": 51.53126907348633,
-      "lon": -0.15696939826011658,
-      "zoom_level": 13
-    },
-    "currency_code": "gbp",
-    "currency_format": "£",
-    "country_code": "GBR",
-    "country_id": 3,
-    "package_purchase": true,
-    "timezone": "Europe/London",
-    "version": 2
-  },
-  {
     "id": 62,
     "name": "Australia",
     "alias": "australia",
@@ -1040,168 +1142,6 @@
     "version": 2
   },
   {
-    "id": 64,
-    "name": "United Arab Emirates",
-    "alias": "united-arab-emirates",
-    "city": "United Arab Emirates",
-    "default_location": {
-      "lat": 25.14512062072754,
-      "lon": 55.26923370361328,
-      "zoom_level": 12
-    },
-    "currency_code": "aed",
-    "currency_format": "AED",
-    "country_code": "ARE",
-    "country_id": 7,
-    "package_purchase": true,
-    "timezone": "Asia/Dubai",
-    "version": 2
-  },
-  {
-    "id": 67,
-    "name": "Netherlands",
-    "alias": "netherlands",
-    "city": "Netherlands",
-    "default_location": {
-      "lat": 52.132633209228516,
-      "lon": 5.291265964508057,
-      "zoom_level": 13
-    },
-    "currency_code": "eur",
-    "currency_format": "€",
-    "country_code": "NLD",
-    "country_id": 10,
-    "package_purchase": true,
-    "timezone": "Europe/Amsterdam",
-    "version": 2
-  },
-  {
-    "id": 68,
-    "name": "Ireland",
-    "alias": "ireland",
-    "city": "Ireland",
-    "default_location": {
-      "lat": 53.41291046142578,
-      "lon": -8.243889808654785,
-      "zoom_level": 13
-    },
-    "currency_code": "eur",
-    "currency_format": "€",
-    "country_code": "IRL",
-    "country_id": 11,
-    "package_purchase": true,
-    "timezone": "Europe/Dublin",
-    "version": 2
-  },
-  {
-    "id": 69,
-    "name": "Norway",
-    "alias": "norway",
-    "city": "Norway",
-    "default_location": {
-      "lat": 60.472023010253906,
-      "lon": 8.46894645690918,
-      "zoom_level": 13
-    },
-    "currency_code": "nok",
-    "currency_format": "kr",
-    "country_code": "NOR",
-    "country_id": 12,
-    "package_purchase": true,
-    "timezone": "Europe/Oslo",
-    "version": 2
-  },
-  {
-    "id": 70,
-    "name": "Sweden",
-    "alias": "sweden",
-    "city": "Sweden",
-    "default_location": {
-      "lat": 60.1281623840332,
-      "lon": 18.64350128173828,
-      "zoom_level": 13
-    },
-    "currency_code": "sek",
-    "currency_format": "kr",
-    "country_code": "SWE",
-    "country_id": 13,
-    "package_purchase": true,
-    "timezone": "Europe/Stockholm",
-    "version": 2
-  },
-  {
-    "id": 71,
-    "name": "Thailand",
-    "alias": "thailand",
-    "city": "Thailand",
-    "default_location": {
-      "lat": 13.725371360778809,
-      "lon": 100.59357452392578,
-      "zoom_level": 11
-    },
-    "currency_code": "thb",
-    "currency_format": "THB",
-    "country_code": "THA",
-    "country_id": 14,
-    "package_purchase": true,
-    "timezone": "Asia/Bangkok",
-    "version": 2
-  },
-  {
-    "id": 72,
-    "name": "Germany",
-    "alias": "germany",
-    "city": "Germany",
-    "default_location": {
-      "lat": 51.16569137573242,
-      "lon": 10.451525688171387,
-      "zoom_level": 13
-    },
-    "currency_code": "eur",
-    "currency_format": "€",
-    "country_code": "DEU",
-    "country_id": 15,
-    "package_purchase": true,
-    "timezone": "Europe/Berlin",
-    "version": 2
-  },
-  {
-    "id": 73,
-    "name": "Malaysia",
-    "alias": "malaysia",
-    "city": "Malaysia",
-    "default_location": {
-      "lat": 3.1389999389648438,
-      "lon": 101.68689727783203,
-      "zoom_level": 12
-    },
-    "currency_code": "myr",
-    "currency_format": "RM",
-    "country_code": "MYS",
-    "country_id": 16,
-    "package_purchase": true,
-    "timezone": "Asia/Kuala_Lumpur",
-    "version": 2
-  },
-  {
-    "id": 74,
-    "name": "France",
-    "alias": "france",
-    "city": "France",
-    "default_location": {
-      "lat": 48.85872268676758,
-      "lon": 2.346428632736206,
-      "zoom_level": 13
-    },
-    "currency_code": "eur",
-    "currency_format": "€",
-    "country_code": "FRA",
-    "country_id": 17,
-    "package_purchase": true,
-    "timezone": "Europe/Paris",
-    "version": 2
-  },
-  {
     "id": 76,
     "name": "Spain",
     "alias": "spain",
@@ -1212,83 +1152,11 @@
       "zoom_level": 13
     },
     "currency_code": "eur",
-    "currency_format": "€",
+    "currency_format": "\u20ac",
     "country_code": "ESP",
     "country_id": 19,
     "package_purchase": true,
     "timezone": "Europe/Madrid",
-    "version": 2
-  },
-  {
-    "id": 77,
-    "name": "Austria",
-    "alias": "austria",
-    "city": "Austria",
-    "default_location": {
-      "lat": 48.208168029785156,
-      "lon": 16.374107360839844,
-      "zoom_level": 13
-    },
-    "currency_code": "eur",
-    "currency_format": "€",
-    "country_code": "AUT",
-    "country_id": 20,
-    "package_purchase": true,
-    "timezone": "Europe/Vienna",
-    "version": 2
-  },
-  {
-    "id": 78,
-    "name": "Switzerland",
-    "alias": "switzerland",
-    "city": "Switzerland",
-    "default_location": {
-      "lat": 47.38629150390625,
-      "lon": 8.528934478759766,
-      "zoom_level": 13
-    },
-    "currency_code": "chf",
-    "currency_format": "SFr",
-    "country_code": "CHE",
-    "country_id": 21,
-    "package_purchase": true,
-    "timezone": "Europe/Zurich",
-    "version": 2
-  },
-  {
-    "id": 80,
-    "name": "Denmark",
-    "alias": "denmark",
-    "city": "Denmark",
-    "default_location": {
-      "lat": 55.68056869506836,
-      "lon": 12.576257705688477,
-      "zoom_level": 13
-    },
-    "currency_code": "dkk",
-    "currency_format": "Kr",
-    "country_code": "DNK",
-    "country_id": 23,
-    "package_purchase": true,
-    "timezone": "Europe/Copenhagen",
-    "version": 2
-  },
-  {
-    "id": 81,
-    "name": "Philippines",
-    "alias": "philippines",
-    "city": "Philippines",
-    "default_location": {
-      "lat": 14.599316596984863,
-      "lon": 120.98247528076172,
-      "zoom_level": 13
-    },
-    "currency_code": "php",
-    "currency_format": "P",
-    "country_code": "PHL",
-    "country_id": 24,
-    "package_purchase": true,
-    "timezone": "Asia/Manila",
     "version": 2
   },
   {
@@ -1310,58 +1178,60 @@
     "version": 2
   },
   {
-    "id": 84,
-    "name": "India",
-    "alias": "india",
-    "city": "India",
+    "id": 67,
+    "name": "Netherlands",
+    "alias": "netherlands",
+    "city": "Netherlands",
     "default_location": {
-      "lat": 19.084749221801758,
-      "lon": 72.87088775634766,
+      "lat": 52.132633209228516,
+      "lon": 5.291265964508057,
       "zoom_level": 13
     },
-    "currency_code": "inr",
-    "currency_format": "₹",
-    "country_code": "IND",
-    "country_id": 27,
+    "currency_code": "eur",
+    "currency_format": "\u20ac",
+    "country_code": "NLD",
+    "country_id": 10,
     "package_purchase": true,
-    "timezone": "Asia/Kolkata",
+    "timezone": "Europe/Amsterdam",
     "version": 2
   },
   {
-    "id": 85,
-    "name": "Japan",
-    "alias": "japan",
-    "city": "Japan",
+    "id": 10019,
+    "name": "Saudi Arabia",
+    "alias": "saudi-arabia",
+    "country_code": "SAU",
+    "timezone": "Asia/Riyadh",
+    "directory_path": "/search/saudi-arabia/fitness",
+    "country_wide_fallback": true,
+    "source": "https://classpass.com/search-index/saudi-arabia"
+  },
+  {
+    "id": 78,
+    "name": "Switzerland",
+    "alias": "switzerland",
+    "city": "Switzerland",
     "default_location": {
-      "lat": 35.70922088623047,
-      "lon": 139.73190307617188,
+      "lat": 47.38629150390625,
+      "lon": 8.528934478759766,
       "zoom_level": 13
     },
-    "currency_code": "jpy",
-    "currency_format": "¥",
-    "country_code": "JPN",
-    "country_id": 28,
+    "currency_code": "chf",
+    "currency_format": "SFr",
+    "country_code": "CHE",
+    "country_id": 21,
     "package_purchase": true,
-    "timezone": "Asia/Tokyo",
+    "timezone": "Europe/Zurich",
     "version": 2
   },
   {
-    "id": 90,
-    "name": "Brazil",
-    "alias": "brazil",
-    "city": "Brazil",
-    "default_location": {
-      "lat": -23.5455322265625,
-      "lon": -46.629920959472656,
-      "zoom_level": 13
-    },
-    "currency_code": "brl",
-    "currency_format": "R$",
-    "country_code": "BRA",
-    "country_id": 33,
-    "package_purchase": true,
-    "timezone": "America/Sao_Paulo",
-    "version": 2
+    "id": 10021,
+    "name": "Poland",
+    "alias": "poland",
+    "country_code": "POL",
+    "timezone": "Europe/Warsaw",
+    "directory_path": "/search/poland/fitness",
+    "country_wide_fallback": true,
+    "source": "https://classpass.com/search-index/poland"
   },
   {
     "id": 93,
@@ -1374,11 +1244,211 @@
       "zoom_level": 13
     },
     "currency_code": "eur",
-    "currency_format": "€",
+    "currency_format": "\u20ac",
     "country_code": "BEL",
     "country_id": 36,
     "package_purchase": true,
     "timezone": "Europe/Brussels",
+    "version": 2
+  },
+  {
+    "id": 10024,
+    "name": "Argentina",
+    "alias": "argentina",
+    "country_code": "ARG",
+    "timezone": "America/Argentina/Salta",
+    "directory_path": "/search/argentina/fitness",
+    "country_wide_fallback": true,
+    "source": "https://classpass.com/search-index/argentina"
+  },
+  {
+    "id": 70,
+    "name": "Sweden",
+    "alias": "sweden",
+    "city": "Sweden",
+    "default_location": {
+      "lat": 60.1281623840332,
+      "lon": 18.64350128173828,
+      "zoom_level": 13
+    },
+    "currency_code": "sek",
+    "currency_format": "kr",
+    "country_code": "SWE",
+    "country_id": 13,
+    "package_purchase": true,
+    "timezone": "Europe/Stockholm",
+    "version": 2
+  },
+  {
+    "id": 68,
+    "name": "Ireland",
+    "alias": "ireland",
+    "city": "Ireland",
+    "default_location": {
+      "lat": 53.41291046142578,
+      "lon": -8.243889808654785,
+      "zoom_level": 13
+    },
+    "currency_code": "eur",
+    "currency_format": "\u20ac",
+    "country_code": "IRL",
+    "country_id": 11,
+    "package_purchase": true,
+    "timezone": "Europe/Dublin",
+    "version": 2
+  },
+  {
+    "id": 58,
+    "name": "Singapore",
+    "alias": "singapore",
+    "city": "Singapore",
+    "default_location": {
+      "lat": 1.2902699708938599,
+      "lon": 103.85195922851562,
+      "zoom_level": 13
+    },
+    "currency_code": "sgd",
+    "currency_format": "$",
+    "country_code": "SGP",
+    "country_id": 5,
+    "package_purchase": true,
+    "timezone": "Asia/Singapore",
+    "version": 2
+  },
+  {
+    "id": 64,
+    "name": "United Arab Emirates",
+    "alias": "united-arab-emirates",
+    "city": "United Arab Emirates",
+    "default_location": {
+      "lat": 25.14512062072754,
+      "lon": 55.26923370361328,
+      "zoom_level": 12
+    },
+    "currency_code": "aed",
+    "currency_format": "AED",
+    "country_code": "ARE",
+    "country_id": 7,
+    "package_purchase": true,
+    "timezone": "Asia/Dubai",
+    "version": 2
+  },
+  {
+    "id": 69,
+    "name": "Norway",
+    "alias": "norway",
+    "city": "Norway",
+    "default_location": {
+      "lat": 60.472023010253906,
+      "lon": 8.46894645690918,
+      "zoom_level": 13
+    },
+    "currency_code": "nok",
+    "currency_format": "kr",
+    "country_code": "NOR",
+    "country_id": 12,
+    "package_purchase": true,
+    "timezone": "Europe/Oslo",
+    "version": 2
+  },
+  {
+    "id": 77,
+    "name": "Austria",
+    "alias": "austria",
+    "city": "Austria",
+    "default_location": {
+      "lat": 48.208168029785156,
+      "lon": 16.374107360839844,
+      "zoom_level": 13
+    },
+    "currency_code": "eur",
+    "currency_format": "\u20ac",
+    "country_code": "AUT",
+    "country_id": 20,
+    "package_purchase": true,
+    "timezone": "Europe/Vienna",
+    "version": 2
+  },
+  {
+    "id": 71,
+    "name": "Thailand",
+    "alias": "thailand",
+    "city": "Thailand",
+    "default_location": {
+      "lat": 13.725371360778809,
+      "lon": 100.59357452392578,
+      "zoom_level": 11
+    },
+    "currency_code": "thb",
+    "currency_format": "THB",
+    "country_code": "THA",
+    "country_id": 14,
+    "package_purchase": true,
+    "timezone": "Asia/Bangkok",
+    "version": 2
+  },
+  {
+    "id": 73,
+    "name": "Malaysia",
+    "alias": "malaysia",
+    "city": "Malaysia",
+    "default_location": {
+      "lat": 3.1389999389648438,
+      "lon": 101.68689727783203,
+      "zoom_level": 12
+    },
+    "currency_code": "myr",
+    "currency_format": "RM",
+    "country_code": "MYS",
+    "country_id": 16,
+    "package_purchase": true,
+    "timezone": "Asia/Kuala_Lumpur",
+    "version": 2
+  },
+  {
+    "id": 10035,
+    "name": "Vietnam",
+    "alias": "vietnam",
+    "country_code": "VNM",
+    "timezone": "Asia/Saigon",
+    "directory_path": "/search/vietnam/fitness",
+    "country_wide_fallback": true,
+    "source": "https://classpass.com/search-index/vietnam"
+  },
+  {
+    "id": 81,
+    "name": "Philippines",
+    "alias": "philippines",
+    "city": "Philippines",
+    "default_location": {
+      "lat": 14.599316596984863,
+      "lon": 120.98247528076172,
+      "zoom_level": 13
+    },
+    "currency_code": "php",
+    "currency_format": "P",
+    "country_code": "PHL",
+    "country_id": 24,
+    "package_purchase": true,
+    "timezone": "Asia/Manila",
+    "version": 2
+  },
+  {
+    "id": 80,
+    "name": "Denmark",
+    "alias": "denmark",
+    "city": "Denmark",
+    "default_location": {
+      "lat": 55.68056869506836,
+      "lon": 12.576257705688477,
+      "zoom_level": 13
+    },
+    "currency_code": "dkk",
+    "currency_format": "Kr",
+    "country_code": "DNK",
+    "country_id": 23,
+    "package_purchase": true,
+    "timezone": "Europe/Copenhagen",
     "version": 2
   }
 ]
