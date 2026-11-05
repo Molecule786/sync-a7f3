@@ -88,7 +88,7 @@ jobs:
           retention-days: 7
   markets:
     needs: [plan,recheck]
-    if: always() && needs.plan.result == 'success' && inputs.scope != 'existing_only'
+    if: ${{ !cancelled() && needs.plan.result == 'success' && inputs.scope != 'existing_only' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 16
     strategy:
