@@ -25,10 +25,12 @@ def database(method, resource, payload=None, params=None):
     # Fixed allowlist; no production resource or production RPC can be selected.
     if resource not in ('venues_global_test','events_global_test','directory_jobs_global_test',
                         'rpc/sync_directory_global_test','rpc/directory_global_test_health',
-                        'rpc/refresh_classpass_precise','events'):
+                        'rpc/refresh_classpass_precise','events','classpass_event_freshness'):
         raise CollectionError('Forbidden database target')
     if resource=='events' and method!='GET':
         raise CollectionError('Direct event writes are forbidden; use the compare-and-swap merge')
+    if resource=='classpass_event_freshness' and method!='GET':
+        raise CollectionError('Freshness writes require a verified source merge')
     response = requests.request(method,CONFIG['supabase_url']+'/rest/v1/'+resource,headers=headers,
                                 json=payload,params=params,timeout=30)
     if not 200 <= response.status_code < 300:

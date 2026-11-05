@@ -36,13 +36,20 @@ begin
    -- Remove even equal-valued proposals server-side; no physical write or timestamp change for a no-op.
    select coalesce(jsonb_object_agg(key,value),'{}') into patch from jsonb_each(patch)
     where to_jsonb(old)->key is distinct from value;
-   if patch='{}'::jsonb then n_same:=n_same+1; continue; end if;
+   if patch='{}'::jsonb then
+    insert into public.classpass_event_freshness(event_id,last_seen_at) values(eid,(proof->>'verified_at')::timestamptz)
+     on conflict(event_id) do update set last_seen_at=greatest(classpass_event_freshness.last_seen_at,excluded.last_seen_at);
+    n_same:=n_same+1; continue;
+   end if;
    if (patch ? 'ends_at' or patch ? 'starts_at') and
     coalesce((patch->>'ends_at')::timestamptz,old.ends_at)<=coalesce((patch->>'starts_at')::timestamptz,old.starts_at)
     then raise exception 'Invalid revised session time'; end if;
    select string_agg(format('%I=(jsonb_populate_record(NULL::public.events,$2)).%I',key,key),',')
     into assignments from jsonb_object_keys(patch) as keys(key);
    execute 'update public.events set '||assignments||',updated_at=now() where id=$1' using old.id,patch;
+   insert into public.classpass_event_freshness(event_id,last_seen_at,source_changed_at)
+    values(eid,(proof->>'verified_at')::timestamptz,now()) on conflict(event_id) do update
+    set last_seen_at=greatest(classpass_event_freshness.last_seen_at,excluded.last_seen_at),source_changed_at=excluded.source_changed_at;
    select jsonb_object_agg(key,to_jsonb(old)->key) into fields from jsonb_object_keys(patch) as keys(key);
    audit:=audit||jsonb_build_array(jsonb_build_object('event_id',eid,'action','updated','before',fields,'after',patch,
     'reason',x->'reasons','evidence',proof)); n_changed:=n_changed+1;
@@ -62,6 +69,9 @@ begin
     (patch->>'starts_at')::timestamptz,(patch->>'ends_at')::timestamptz,patch->>'venue',patch->>'street',patch->>'zip',
     patch->>'city',patch->>'city_slug',patch->>'region',patch->>'country',(patch->>'lat')::float8,(patch->>'lon')::float8,
     patch->>'url','classpass','fitness');
+   insert into public.classpass_event_freshness(event_id,last_seen_at,source_changed_at)
+    values(eid,(proof->>'verified_at')::timestamptz,now()) on conflict(event_id) do update
+    set last_seen_at=greatest(classpass_event_freshness.last_seen_at,excluded.last_seen_at),source_changed_at=excluded.source_changed_at;
    audit:=audit||jsonb_build_array(jsonb_build_object('event_id',eid,'action','inserted','reason','Verified new upcoming source session','evidence',proof));
    n_new:=n_new+1;
   end if;

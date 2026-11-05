@@ -214,6 +214,8 @@ def collect(market, markets, root, max_requests=150, profile_loader=None):
         gaps = any(state['excluded'].get(k) for k in ('unknown_or_conflicting_country','missing_required_fields'))
         state['status'] = 'complete' if not gaps and state['expected'] < 10000 else 'partial'
         state['retryable'] = False if gaps or state['expected'] >= 10000 else state['status'] != 'complete'
+        if market.get('country_wide_fallback') and not any(c==ISO2[market['country_code']] for c in state.get('venue_countries',{}).values()):
+            state.update(status='partial',retryable=False,error='Country-labelled route has no verified domestic studios; country coverage remains unresolved')
         state['expected_tasks'] = len(tasks)
     except CollectionError as exc:
         state.update(status='partial' if isinstance(exc,RetryableError) else 'failed', error=str(exc),

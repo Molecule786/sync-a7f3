@@ -1,11 +1,12 @@
 """Frozen-ID manifest and source-by-source verification of existing live rows."""
 import argparse,json,os,gzip
-from datetime import datetime,timezone
+from datetime import datetime,timezone,timedelta
 from pathlib import Path
 from collector import CollectionError
 from precise_refresh import proposal,session_row
 from run_global import database,ROOT
 from us_collector import PublicClient,save
+from sync_state import RetryableError
 
 def plan():
     rows=[];offset=0
@@ -17,17 +18,28 @@ def plan():
         offset+=len(page)
     allowed={r['iso3'] for r in json.loads((ROOT/'global_scope.json').read_text())['countries']}
     from global_collector import ISO2
-    ids=[r['event_id'] for r in rows if r['country'] in {ISO2[c] for c in allowed}]
-    save(Path('output/recheck-manifest.json'),{'created_at':datetime.now(timezone.utc).isoformat(),'event_ids':ids,'size':100})
-    shards=list(range((len(ids)+99)//100))
+    recent=set();offset=0
+    cutoff=(datetime.now(timezone.utc)-timedelta(hours=6)).isoformat()
+    while True:
+        page=database('GET','classpass_event_freshness',params={'select':'event_id','last_seen_at':'gte.'+cutoff,
+                      'order':'event_id','limit':1000,'offset':offset})
+        recent.update(r['event_id'] for r in page)
+        if len(page)<1000:break
+        offset+=len(page)
+    scoped=[r['event_id'] for r in rows if r['country'] in {ISO2[c] for c in allowed}]
+    ids=[identity for identity in scoped if identity not in recent]
+    save(Path('output/recheck-manifest.json'),{'created_at':datetime.now(timezone.utc).isoformat(),'event_ids':ids,'size':100,
+         'all_existing_records':len(scoped),'already_verified_within_six_hours':len(scoped)-len(ids)})
+    shards=list(range((len(ids)+99)//100)) or [0]
     if os.environ.get('GITHUB_OUTPUT'):
         with open(os.environ['GITHUB_OUTPUT'],'a') as f:f.write('shards='+json.dumps(shards)+'\n')
-    print(json.dumps({'existing_records':len(ids),'shards':len(shards)}))
+    print(json.dumps({'existing_records':len(scoped),'remaining_to_verify':len(ids),
+                      'already_verified_within_six_hours':len(scoped)-len(ids),'shards':len(shards)}))
 
 def recheck(shard):
     manifest=json.loads(Path('output/recheck-manifest.json').read_text())
     ids=manifest['event_ids'][shard*100:(shard+1)*100]
-    rows=database('GET','events',params={'select':'*','source':'eq.classpass','event_id':'in.('+','.join(ids)+')'})
+    rows=database('GET','events',params={'select':'*','source':'eq.classpass','event_id':'in.('+','.join(ids)+')'}) if ids else []
     markets=json.loads((ROOT/'global_markets.json').read_text(encoding='utf-8'))
     country_map={m['id']:m['country_code'] for m in markets}
     client=PublicClient(max_requests=150)
@@ -46,7 +58,7 @@ def recheck(shard):
                            'source_ends_at':row['ends_at'],'verified_at':change['evidence']['verified_at']})
         except CollectionError as exc:
             checks.append({'event_id':before['event_id'],'source_state':'unverified_retained','error':str(exc)})
-            if '403' in str(exc) or '401' in str(exc):break
+            if isinstance(exc,RetryableError) or '403' in str(exc) or '401' in str(exc):break
     root=Path('output')/('recheck-'+str(shard));root.mkdir(parents=True,exist_ok=True)
     (root/'source-sessions.json.gz').write_bytes(gzip.compress(json.dumps(snapshots,ensure_ascii=False).encode('utf-8')))
     save(root/'source-checks.json',checks)
