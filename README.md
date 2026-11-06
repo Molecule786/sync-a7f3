@@ -1,4 +1,4 @@
-> Current operation (2026-11-06): this repository is PUBLIC. ACTIVE refreshes existing events daily at 04:43 UTC; OpenSports refreshes existing events every six hours at minute 17. The global ClassPass workflow remains manual, and the earlier staged workflows remain disabled. The global ClassPass storage guard is 400 MiB. See [EVENT_REFRESH.md](EVENT_REFRESH.md) for current behavior; the older pilot sections below are historical and do not describe the current enabled schedules.
+Current operation (2026-11-06): ClassPass top-40-country reconciliation refreshes daily at 04:13 UTC (09:13 Pakistan time). A single retry at 10:13 UTC (15:13 Pakistan time) resumes recent unfinished retryable routes only. Existing records are source-verified, unchanged fields are preserved, and missing routes remain unresolved rather than zero. Public GitHub-hosted runners work independently of the user computer. The 400 MiB storage guard remains in force. ACTIVE runs daily at 04:43 UTC; OpenSports runs every six hours at minute 17. Earlier pilot workflows have been removed; historical documentation below is reference only.
 
 # FitGlobe ClassPass daily US sync â€” staged rollout
 

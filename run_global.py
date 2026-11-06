@@ -2,6 +2,7 @@
 import argparse
 import base64
 import gzip
+import io
 import json
 import os
 from datetime import datetime, timedelta, timezone
@@ -14,6 +15,36 @@ from precise_refresh import proposal
 
 ROOT = Path(__file__).resolve().parent
 CONFIG = json.loads((ROOT/'config.json').read_text())
+CHECKPOINT_RAW_LIMIT = 64 * 1024 * 1024
+CHECKPOINT_WIRE_LIMIT = 8 * 1024 * 1024
+
+
+def decode_checkpoint(value):
+    """The wire and decoded limits differ; old large manifests stay lossless."""
+    if len(value) > CHECKPOINT_WIRE_LIMIT:
+        raise CollectionError('Saved compressed checkpoint exceeds transfer budget')
+    try:
+        packed = base64.b64decode(value, validate=True)
+        with gzip.GzipFile(fileobj=io.BytesIO(packed)) as stream:
+            raw = stream.read(CHECKPOINT_RAW_LIMIT + 1)
+        if len(raw) > CHECKPOINT_RAW_LIMIT:
+            raise ValueError('Decoded checkpoint too large')
+        state = json.loads(raw)
+        if not isinstance(state, dict):
+            raise ValueError('Invalid checkpoint')
+        return state
+    except (ValueError, OSError, EOFError, TypeError) as exc:
+        raise CollectionError('Saved global checkpoint failed bounded validation') from exc
+
+
+def encode_checkpoint(state):
+    raw = json.dumps(state, ensure_ascii=False).encode('utf-8')
+    if len(raw) > CHECKPOINT_RAW_LIMIT:
+        raise CollectionError('Global checkpoint exceeds decoded storage budget')
+    value = base64.b64encode(gzip.compress(raw, mtime=0)).decode('ascii')
+    if len(value) > CHECKPOINT_WIRE_LIMIT:
+        raise CollectionError('Global checkpoint exceeds compressed transfer budget')
+    return value
 
 def database(method, resource, payload=None, params=None):
     secret = os.environ.get('SUPABASE_SECRET_KEY')
@@ -51,12 +82,9 @@ def run(market, markets, maximum, production=False):
     if not health.get('can_collect'):
         raise CollectionError('400 MiB database guard: collection stopped before source requests')
     source_key='classpass-production' if production else 'classpass'
-    previous = database('GET','directory_jobs_global_test',params={'source':'eq.'+source_key,'market_id':'eq.'+str(market['id']),'select':'compressed_state'})
+    previous = database('GET','directory_jobs_global_test',params={'source':'eq.'+source_key,'market_id':'eq.'+str(market['id']),'select':'compressed_state,stats'})
     if previous and previous[0].get('compressed_state'):
-        raw = gzip.decompress(base64.b64decode(previous[0]['compressed_state']))
-        if len(raw)>8*1024*1024:
-            raise CollectionError('Saved global checkpoint exceeds budget')
-        state = json.loads(raw)
+        state = decode_checkpoint(previous[0]['compressed_state'])
         # Completed/exported tasks are durable in the isolated tables; unfinished writes refetch.
         state['tasks'] = {k:v for k,v in state.get('tasks',{}).items() if v.get('exported')}
         save(root/'checkpoint.json',state)
@@ -107,9 +135,7 @@ def run(market, markets, maximum, production=False):
     previous_audit=json.loads(audit_path.read_text(encoding='utf-8')) if audit_path.exists() else []
     save(audit_path,previous_audit+audits)
     # Future run restores the compact job manifest; source task payloads are in database/artifacts.
-    packed = base64.b64encode(gzip.compress(json.dumps(state,ensure_ascii=False).encode('utf-8'),mtime=0)).decode('ascii')
-    if len(packed)>8*1024*1024:
-        raise CollectionError('Global checkpoint exceeds isolated storage budget')
+    packed = encode_checkpoint(state)
     database('POST','directory_jobs_global_test',{'source':source_key,'market_id':market['id'],
              'country':country,'compressed_state':packed,'stats':summary,
              'updated_at':datetime.now(timezone.utc).isoformat()},params={'on_conflict':'source,market_id'})

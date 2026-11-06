@@ -11,7 +11,13 @@ if __name__=='__main__':
     market=next(m for m in all_markets if m['id']==a.market)
     results=[]
     for attempt in range(a.attempts):
-        result=run(market,{m['id']:m['country_code'] for m in all_markets},150,True)
+        try:
+            result=run(market,{m['id']:m['country_code'] for m in all_markets},150,True)
+        except Exception as exc:
+            result={'status':'failed','market_id':a.market,'retryable':False,
+                    'error':str(exc) if isinstance(exc,CollectionError) else type(exc).__name__}
+            root=ROOT/'output/global'/str(a.market);root.mkdir(parents=True,exist_ok=True)
+            (root/'summary.json').write_text(json.dumps(result,indent=2),encoding='utf-8')
         results.append(result);print(json.dumps(result),flush=True)
         # Never repeat access failures, source gaps or an explicit cooldown.
         if result['status']=='complete' or not result.get('retryable') or result.get('retry_not_before'):break
