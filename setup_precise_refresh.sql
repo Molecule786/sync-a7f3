@@ -62,7 +62,7 @@ begin
     or (patch->>'ends_at')::timestamptz<=(patch->>'starts_at')::timestamptz
     or coalesce(patch->>'url','') !~ ('^https://classpass[.]com/classes/[^/]+/[^/]+/'||split_part(eid,':',2)||'/?$')
     then raise exception 'Invalid new upcoming ClassPass event';end if;
-   if pg_database_size(current_database())>367001600 then raise exception '350 MiB storage guard prevents new inserts';end if;
+   if pg_database_size(current_database())>419430400 then raise exception '400 MiB storage guard prevents new inserts';end if;
    insert into public.events(event_id,title,organizer,organizer_url,description,starts_at,ends_at,venue,street,zip,
     city,city_slug,region,country,lat,lon,url,source,category)
    values(eid,patch->>'title',patch->>'organizer',patch->>'organizer_url',patch->>'description',

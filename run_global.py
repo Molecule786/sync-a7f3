@@ -49,7 +49,7 @@ def run(market, markets, maximum, production=False):
     root.mkdir(parents=True,exist_ok=True)
     health = database('POST','rpc/directory_global_test_health',{})
     if not health.get('can_collect'):
-        raise CollectionError('350 MiB database guard: collection stopped before source requests')
+        raise CollectionError('400 MiB database guard: collection stopped before source requests')
     source_key='classpass-production' if production else 'classpass'
     previous = database('GET','directory_jobs_global_test',params={'source':'eq.'+source_key,'market_id':'eq.'+str(market['id']),'select':'compressed_state'})
     if previous and previous[0].get('compressed_state'):

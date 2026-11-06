@@ -33,8 +33,8 @@ begin
  or octet_length(p_venues::text)+octet_length(p_events::text)>8388608 then
   raise exception 'Invalid global test batch';
  end if;
- if pg_database_size(current_database())+octet_length(p_venues::text)+octet_length(p_events::text)>367001600 then
-  raise exception '350 MiB database guard: stop expansion before adding more data';
+ if pg_database_size(current_database())+octet_length(p_venues::text)+octet_length(p_events::text)>419430400 then
+  raise exception '400 MiB database guard: stop expansion before adding more data';
  end if;
  perform pg_advisory_xact_lock(724903618);
  for v in select value from jsonb_array_elements(p_venues) loop
@@ -82,7 +82,7 @@ grant execute on function public.sync_directory_global_test(integer,text,jsonb,j
 create function public.directory_global_test_health() returns jsonb
 language sql security invoker set search_path='' as $$
  select jsonb_build_object('bytes',pg_database_size(current_database()),
-  'can_collect',pg_database_size(current_database())<367001600);
+  'can_collect',pg_database_size(current_database())<419430400);
 $$;
 revoke all on function public.directory_global_test_health() from public,anon,authenticated;
 grant execute on function public.directory_global_test_health() to service_role;
