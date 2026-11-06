@@ -4,7 +4,7 @@ create or replace function public.existing_event_refresh_candidates(p_source tex
 returns table(event_id text,country character(2)) language sql stable security invoker set search_path='' as $$
  select e.event_id,e.country from public.events e
  where p_source in ('active','opensports') and e.source=p_source and e.event_id>coalesce(p_after,'')
- and (e.ends_at>=now() or e.ends_at is null or e.starts_at>=e.ends_at)
+
  order by e.event_id limit least(greatest(p_limit,1),500);
 $$;
 revoke all on function public.existing_event_refresh_candidates(text,text,integer) from public,anon,authenticated;
