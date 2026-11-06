@@ -1,5 +1,8 @@
 name: opensports existing event refresh
 on:
+  workflow_run:
+    workflows: ['Approved one-off expired event cleanup']
+    types: [completed]
   schedule:
     - cron: '17 */6 * * *'
   workflow_dispatch:
@@ -19,6 +22,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   plan:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     outputs:
@@ -68,7 +72,7 @@ jobs:
       - name: Refresh only matching existing events
         env:
           SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
-          APPLY: ${{ github.event_name == 'schedule' || inputs.mode == 'production' }}
+          APPLY: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_run' || inputs.mode == 'production' }}
           SHARD: ${{ matrix.shard }}
         run: |
           args=()
