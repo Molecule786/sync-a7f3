@@ -124,6 +124,9 @@ def proposal(row,before):
  for k,v in row.items():
   if k not in FIELDS or v is None or (isinstance(v,str) and not v.strip()):continue
   old=before.get(k)
+  # Venue/profile refresh is a later phase. Keep populated location fields
+  # together rather than changing a city while retaining its old coordinates.
+  if k in ('venue','street','zip','city','region','lat','lon') and old not in (None,''):continue
   if k in ('starts_at','ends_at'):
    if old and timestamp(old)==timestamp(v):continue
   elif old is not None and norm(old)==norm(v):continue

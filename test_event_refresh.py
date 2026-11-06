@@ -30,5 +30,8 @@ class RefreshTests(unittest.TestCase):
   self.assertEqual(proposal({'title':'Yoga','description':'','price':0,'lat':20,'starts_at':'2026-11-14T15:00:00+00:00'},before),{})
  def test_missing_timezone_rejected(self):
   with self.assertRaises(SourceError):timestamp('2026-11-14T09:00:00')
+ def test_filled_location_waits_for_venue_refresh_phase(self):
+  self.assertEqual(proposal({'city':'New city','venue':'New studio','description':'New details'},
+   {'city':'Old city','venue':'Old studio','description':'Old details'}),{'description':'New details'})
 
 if __name__=='__main__':unittest.main()
