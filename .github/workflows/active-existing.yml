@@ -1,0 +1,83 @@
+name: active existing event refresh
+on:
+  schedule:
+    - cron: '43 4 * * *'
+  workflow_dispatch:
+    inputs:
+      mode:
+        type: choice
+        options: [preview, production]
+        default: preview
+      sample:
+        description: '0 for every existing eligible event; 1..100 for a bounded test'
+        type: string
+        default: '0'
+permissions:
+  contents: read
+concurrency:
+  group: active-existing-event-writer
+  cancel-in-progress: false
+jobs:
+  plan:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      shards: ${{ steps.plan.outputs.shards }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python -m unittest test_event_refresh -v
+      - id: plan
+        env:
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          SAMPLE: ${{ inputs.sample || '0' }}
+        run: python event_refresh.py --source active --plan --sample "$SAMPLE"
+      - uses: actions/upload-artifact@v6
+        with:
+          name: active-existing-manifest
+          path: output/active-manifest.json
+          retention-days: 2
+  refresh:
+    needs: plan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        shard: ${{ fromJSON(needs.plan.outputs.shards) }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: pip install -r requirements.txt
+      - uses: actions/download-artifact@v6
+        with:
+          name: active-existing-manifest
+          path: output
+      - name: Refresh only matching existing events
+        env:
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          APPLY: ${{ github.event_name == 'schedule' || inputs.mode == 'production' }}
+          SHARD: ${{ matrix.shard }}
+        run: |
+          args=()
+          if [ "$APPLY" = "true" ]; then args+=(--apply); fi
+          python event_refresh.py --source active --shard "$SHARD" "${args[@]}"
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: active-shard-${{ matrix.shard }}-summary
+          path: output/active-${{ matrix.shard }}-summary.json
+          retention-days: 7
+          if-no-files-found: ignore

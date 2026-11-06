@@ -1,0 +1,44 @@
+name: Approved one-off expired event cleanup
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: classpass-production-writer
+  cancel-in-progress: false
+jobs:
+  cleanup:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: requirements-event-refresh.txt
+      - run: pip install -r requirements-event-refresh.txt
+      - name: Export and verify an encrypted backup before any deletion
+        env:
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: python event_maintenance.py backup
+      - name: Preserve encrypted backup
+        uses: actions/upload-artifact@v6
+        with:
+          name: expired-events-encrypted-backup
+          path: output/expired_cleanup/encrypted/
+          retention-days: 7
+          if-no-files-found: error
+      - name: Delete only approved ended rows that still match their backups
+        env:
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: python event_maintenance.py purge
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: expired-events-cleanup-result
+          path: output/expired_cleanup/cleanup_result.json
+          retention-days: 7
+          if-no-files-found: ignore
