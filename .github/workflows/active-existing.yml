@@ -47,6 +47,7 @@ jobs:
           name: active-existing-manifest
           path: output/active-manifest.json
           retention-days: 2
+          overwrite: true
   refresh:
     needs: plan
     runs-on: ubuntu-24.04
@@ -84,4 +85,34 @@ jobs:
           name: active-shard-${{ matrix.shard }}-summary
           path: output/active-${{ matrix.shard }}-summary.json
           retention-days: 7
+          overwrite: true
           if-no-files-found: ignore
+  report:
+    needs: [plan, refresh]
+    if: always() && needs.plan.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v6
+        with:
+          pattern: active-shard-*-summary
+          path: output
+          merge-multiple: true
+      - uses: actions/download-artifact@v6
+        with:
+          name: active-existing-manifest
+          path: output
+      - run: python event_refresh_report.py --source active
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: active-refresh-report
+          path: output/active-refresh-report.json
+          retention-days: 7
+          overwrite: true
