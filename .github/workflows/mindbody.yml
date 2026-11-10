@@ -20,6 +20,10 @@ on:
         description: 'Maximum new classes per country (0..100)'
         default: '10'
         type: string
+      profile_venues:
+        description: 'Existing studio profiles to bulk refresh per country (1..25000)'
+        default: '3'
+        type: string
 permissions:
   contents: read
 concurrency:
@@ -75,10 +79,11 @@ jobs:
           APPLY: ${{ github.event_name == 'schedule' || inputs.mode == 'production' }}
           VENUES: ${{ inputs.venues || '100' }}
           NEW_EVENTS: ${{ inputs.new_events || '50' }}
+          PROFILE_VENUES: ${{ inputs.profile_venues || '25000' }}
         run: |
           args=()
           if [ "$APPLY" = "true" ]; then args+=(--apply); fi
-          python mindbody_sync.py --country "$COUNTRY" --venues "$VENUES" --new-events "$NEW_EVENTS" "${args[@]}"
+          python mindbody_sync.py --country "$COUNTRY" --venues "$VENUES" --new-events "$NEW_EVENTS" --profile-venues "$PROFILE_VENUES" "${args[@]}"
       - uses: actions/upload-artifact@v6
         if: always()
         with:
