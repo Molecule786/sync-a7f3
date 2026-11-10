@@ -52,17 +52,19 @@ def venue_patch(location):
   amenities=a.get('amenities'),activities=a.get('categories'),
   url='https://www.mindbodyonline.com/explore/locations/'+a['slug']))
 
-def session_row(item,location,now):
+def session_row(item,location,now,existing_ids=()):
  outer=item.get('attributes',{})
  if outer.get('subType')!='class_time':return None
  a=outer.get('attributes',{});course=a.get('course') or {};loc=location['attributes']
- if a.get('isCancelled') is not False:return None
+ cancelled=a.get('isCancelled')
+ if cancelled is not False and cancelled is not True:return None
  start,end=utc(a['startTime']),utc(a['endTime'])
  if not now<=start<now+timedelta(days=7) or end<=start:return None
  ref=json.loads(a['inventoryRefJson']);lr=json.loads(loc['inventoryRefJson'])
  if ref.get('inventory_source')!='MB' or any(str(ref.get(k))!=str(lr.get(k)) for k in ('mb_site_id','mb_location_id','mb_master_location_id')):raise ValueError('Class/studio identity mismatch')
  if not all(str(ref.get(k,'')).isdigit() for k in ('mb_site_id','mb_location_id','mb_class_id')):raise ValueError('Invalid class identity')
  eid='mindbody:'+':'.join(str(ref[k]) for k in ('mb_site_id','mb_location_id','mb_class_id'))
+ if cancelled and eid not in existing_ids:return None
  if not course.get('name'):raise ValueError('Class has no title')
  p=venue_patch(location)
  description=course.get('description') or ''
@@ -70,7 +72,7 @@ def session_row(item,location,now):
  for label,value in [('Instructor',(a.get('staff') or {}).get('name')),('Prerequisites',a.get('prerequisiteNotes')),
                      ('Cancellation policy',a.get('cancellationPolicy')),('Refund policy',a.get('refundPolicy'))]:
   if value and value.strip() and '\ufffd' not in value:description+='\n\n'+label+': '+value.strip()
- status=(a.get('status') or {}).get('status')
+ status='Cancelled' if cancelled else (a.get('status') or {}).get('status')
  patch=clean(dict(title=course['name'],description=description.strip(),organizer=loc.get('name'),organizer_url=p['url'],
   starts_at=start.isoformat(),ends_at=end.isoformat(),venue=loc.get('locationName') or loc.get('name'),
   **{k:p.get(k) for k in ('street','zip','city','region','country','lat','lon')},
@@ -166,7 +168,7 @@ def run(country,apply,limit,new_events,profile_limit=3):
        start_time_from=now.isoformat(),start_time_to=(now+timedelta(days=7)).isoformat()))['data']
    if len(data)>=1000:stats['gaps'].append('Schedule response large; truncation not ruled out for '+seed['venue_id'])
    for item in data:
-    parsed=session_row(item,loc,now)
+    parsed=session_row(item,loc,now,existing)
     if not parsed:continue
     eid,patch,ref=parsed;stats['event_candidates']+=1
     if eid not in existing and stats['events_inserted']>=new_events:
