@@ -69,4 +69,18 @@ begin
 end $$;
 revoke all on function public.save_mindbody_checkpoint(text,jsonb) from public,anon,authenticated;
 grant execute on function public.save_mindbody_checkpoint(text,jsonb) to service_role;
+
+create or replace function public.sync_mindbody_venues(p_items jsonb) returns jsonb
+language plpgsql security invoker set search_path='' as $$
+declare x jsonb; results jsonb:='[]';r jsonb;
+begin
+ if jsonb_typeof(p_items) is distinct from 'array' or jsonb_array_length(p_items)>50 or octet_length(p_items::text)>8388608 then raise exception 'Invalid studio batch';end if;
+ for x in select value from jsonb_array_elements(p_items) loop
+  r:=public.sync_mindbody_record('venue',x->>'identity',x->'patch',x->'expected',x->'evidence');
+  results:=results||jsonb_build_array(r||jsonb_build_object('identity',x->>'identity'));
+ end loop;
+ return results;
+end $$;
+revoke all on function public.sync_mindbody_venues(jsonb) from public,anon,authenticated;
+grant execute on function public.sync_mindbody_venues(jsonb) to service_role;
 commit;
