@@ -6,6 +6,9 @@ from curl_cffi import requests
 URL=json.loads((Path(__file__).parent/'config.json').read_text())['supabase_url']
 READ={'events','classpass_event_freshness','classpass_market_events','classpass_session_details'}
 WRITE={'rpc/refresh_existing_directory_event','rpc/purge_approved_expired_events','rpc/existing_event_refresh_candidates'}
+READ.update({'venues_global_test','events_global_test','directory_jobs_global_test'})
+WRITE.update({'rpc/directory_retention_cache_state','rpc/prune_directory_retention_cache',
+              'rpc/purge_source_confirmed_expired_events'})
 
 def db(resource,method='GET',payload=None,params=None):
  if (method=='GET' and resource not in READ) or (method=='POST' and resource not in WRITE) or method not in ('GET','POST'):
