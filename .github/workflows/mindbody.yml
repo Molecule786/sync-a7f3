@@ -87,3 +87,40 @@ jobs:
           retention-days: 7
           overwrite: true
           if-no-files-found: ignore
+  report:
+    needs: [plan, sync]
+    if: always() && needs.plan.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/download-artifact@v6
+        with:
+          pattern: mindbody-*-summary
+          path: output
+          merge-multiple: true
+      - env:
+          COUNTRIES: ${{ needs.plan.outputs.countries }}
+        run: |
+          python - <<'PY'
+          import os,json
+          from pathlib import Path
+          root=Path('output');root.mkdir(exist_ok=True)
+          results={}
+          for country in json.loads(os.environ['COUNTRIES']):
+              p=root/('mindbody-'+country+'-summary.json')
+              results[country]=json.loads(p.read_text()) if p.exists() else {'country':country,'status':'missing_job_result','gaps':['Job did not produce a summary; coverage unknown']}
+          report={'coverage':'Staged rotation, not exhaustive national coverage','countries':results}
+          (root/'mindbody-country-report.json').write_text(json.dumps(report,indent=2))
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as f:
+              f.write('## Mindbody staged country report\n\nCountry | Studios checked | Classes inserted | New studios | Status\n--- | ---: | ---: | ---: | ---\n')
+              for c,r in results.items():f.write(f"{c} | {r.get('venues_checked','unknown')} | {r.get('events_inserted','unknown')} | {r.get('new_venues_discovered','unknown')} | {r['status']}\n")
+              f.write('\nRead the report artifact for limits and unresolved gaps. Missing/unsearched results are never confirmed zero.\n')
+          if any(r.get('blocked') or r['status']=='missing_job_result' for r in results.values()):raise SystemExit(2)
+          PY
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: mindbody-country-report
+          path: output/mindbody-country-report.json
+          retention-days: 7
+          overwrite: true
