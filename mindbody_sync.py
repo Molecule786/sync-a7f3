@@ -95,7 +95,7 @@ def merge(kind,identity,patch,expected,evidence,apply):
  if apply:return db('rpc/sync_mindbody_record','POST',dict(p_kind=kind,p_identity=identity,p_patch=patch,p_expected=expected,p_evidence=evidence))
  return {'action':'preview'}
 
-def run(country,apply,limit,new_events):
+def run(country,apply,limit,new_events,profile_limit=3):
  out=ROOT/'output';out.mkdir(exist_ok=True)
  stats={'country':country,'mode':'production' if apply else 'preview','started_at':datetime.now(timezone.utc).isoformat(),
   'venues_checked':0,'event_candidates':0,'events_inserted':0,'actions':{},'gaps':[],'new_venues_discovered':0}
@@ -106,19 +106,57 @@ def run(country,apply,limit,new_events):
  stats['known_venues']=len(venues)
  after=[v for v in venues if v['venue_id']>cursor];selected=(after+[v for v in venues if v['venue_id']<=cursor])[:limit]
  existing={e['event_id']:e for e in rows('events',{'source':'eq.mindbody','country':'eq.'+country,'select':'*'})}
- stats['existing_events']=len(existing);last=cursor
+ # Revisit studios with already-published upcoming events daily before expanding.
+ priority_urls={e.get('organizer_url') for e in existing.values() if e.get('ends_at') and utc(e['ends_at'])>datetime.now(timezone.utc)}
+ priority=[v for v in venues if v.get('url') in priority_urls]
+ selected=(priority+[v for v in selected if v.get('url') not in priority_urls])[:max(limit,len(priority))]
+ selected=selected[:200]
+ stats['existing_events']=len(existing);last=cursor or 'mindbody:0'
+ profile_cursor=saved.get('profile_cursor','');stats['profile_cursor']=profile_cursor
+ profile_order=([v for v in venues if v['venue_id']>profile_cursor]+[v for v in venues if v['venue_id']<=profile_cursor])[:profile_limit]
+ location_cache={};profile_verified=set();profile_failed=False
+ for start in range(0,len(profile_order),50):
+  if time.monotonic()-started>420:
+   stats['gaps'].append('Studio profile budget reached; saved cursor resumes next run');break
+  batch=profile_order[start:start+50]
+  try:
+   slugs=[]
+   for v in batch:
+    u=urlparse(v.get('url') or '')
+    if u.hostname=='www.mindbodyonline.com' and u.path.startswith('/explore/locations/'):slugs.append(u.path.rstrip('/').split('/')[-1])
+   found=client.post('search/locations',{'page':{'size':50,'number':1},'filter':{'radius':0,'locationSlugs':slugs}})['data'] if slugs else []
+   by_id={'mindbody:'+str(v['id']):v for v in found};items=[];verified_at=datetime.now(timezone.utc).isoformat()
+   for old in batch:
+    identity=old['venue_id'];loc=by_id.get(identity)
+    if not loc or loc['attributes'].get('countryCode')!=country or 'Fitness' not in loc['attributes'].get('categoryTypes',[]):
+     stats['unverified_profiles']=stats.get('unverified_profiles',0)+1;continue
+    items.append({'identity':identity,'patch':venue_patch(loc),'expected':old,'evidence':{'verified_at':verified_at,'location_id':str(loc['id']),'country':country}})
+    if any(v['venue_id']==identity for v in selected):location_cache[identity]=loc
+   results=db('rpc/sync_mindbody_venues','POST',{'p_items':items}) if apply and items else [{'action':'preview','identity':x['identity']} for x in items]
+   for result in results:
+    key='profile_'+result['action'];stats['actions'][key]=stats['actions'].get(key,0)+1
+    if result['action']=='storage_guard_skipped':raise RuntimeError('400 MiB storage guard')
+    profile_verified.add(result['identity'])
+   stats['profiles_verified']=stats.get('profiles_verified',0)+len(items)
+   stats['profile_cursor']=batch[-1]['venue_id']
+   if apply:db('rpc/save_mindbody_checkpoint','POST',dict(p_country=country,p_stats={**stats,'cursor':last}))
+  except Exception as e:
+   stats['gaps'].append('Profile refresh: '+str(e)[:160]);stats['blocked']=True;profile_failed=True;break
+ if stats.get('unverified_profiles'):stats['gaps'].append('Some stored studio profiles unavailable or not verified as fitness; retained unchanged')
+ if len(profile_order)<len(venues):stats['gaps'].append('Profile row limit; remainder rotates next run')
  def record(kind,identity,patch,old,evidence):
   r=merge(kind,identity,patch,old,evidence,apply);key=kind+'_'+r['action'];stats['actions'][key]=stats['actions'].get(key,0)+1
   if r['action']=='storage_guard_skipped':raise RuntimeError('400 MiB storage guard; no further inserts')
   if kind=='event' and r['action']=='inserted':stats['events_inserted']+=1
   if kind=='venue' and old is None and r['action']=='inserted':stats['new_venues_discovered']+=1
  for seed in selected:
+  if profile_failed:break
   if time.monotonic()-started>720:stats['gaps'].append('Runtime budget; remaining venues resume next run');break
   try:
-   loc=client.location(seed['url'],seed['venue_id']);a=loc['attributes']
+   loc=location_cache.get(seed['venue_id']) or client.location(seed['url'],seed['venue_id']);a=loc['attributes']
    if a.get('countryCode')!=country or 'Fitness' not in a.get('categoryTypes',[]):raise ValueError('Country/category no longer verified')
    proof={'verified_at':datetime.now(timezone.utc).isoformat(),'location_id':str(loc['id']),'country':country}
-   record('venue',seed['venue_id'],venue_patch(loc),seed,proof)
+   if seed['venue_id'] not in profile_verified:record('venue',seed['venue_id'],venue_patch(loc),seed,proof)
    now=datetime.now(timezone.utc)
    data=client.post('location/schedules',dict(location_ref_json=a['inventoryRefJson'],location_timezone=a['timezone'],
        start_time_from=now.isoformat(),start_time_to=(now+timedelta(days=7)).isoformat()))['data']
@@ -148,14 +186,14 @@ def run(country,apply,limit,new_events):
      known.add(identity);new_count+=1
     stats['discovery_found_near_seed']=nearby.get('meta',{}).get('found')
     stats['gaps'].append('New studio discovery limited to first 100 nearby results and 10 inserts; national discovery incomplete')
-   if apply:db('rpc/save_mindbody_checkpoint','POST',dict(p_country=country,p_stats={'cursor':last,'last_venue_verified_at':proof['verified_at']}))
+   if apply:db('rpc/save_mindbody_checkpoint','POST',dict(p_country=country,p_stats={'cursor':last,'profile_cursor':stats['profile_cursor'],'last_venue_verified_at':proof['verified_at']}))
   except Exception as e:
    stats['gaps'].append(seed['venue_id']+': '+str(e)[:160])
    if isinstance(e,ValueError):
     # One unavailable/malformed studio must not permanently block a country.
     # Keep its gap explicit and revisit it on the next full rotation.
     last=seed['venue_id'];stats['unverified_venues']=stats.get('unverified_venues',0)+1
-    if apply:db('rpc/save_mindbody_checkpoint','POST',dict(p_country=country,p_stats={'cursor':last,'unverified_venue':last}))
+    if apply:db('rpc/save_mindbody_checkpoint','POST',dict(p_country=country,p_stats={'cursor':last,'profile_cursor':stats['profile_cursor'],'unverified_venue':last}))
     continue
    stats['blocked']=True
    # Do not advance past an access/database failure; permit a later retry.
@@ -173,8 +211,8 @@ def run(country,apply,limit,new_events):
 
 def main():
  p=argparse.ArgumentParser();p.add_argument('--country',choices=COUNTRIES,required=True);p.add_argument('--apply',action='store_true')
- p.add_argument('--venues',type=int,default=100);p.add_argument('--new-events',type=int,default=50);a=p.parse_args()
- if not 1<=a.venues<=200 or not 0<=a.new_events<=100:raise ValueError('Stage budget exceeded')
- result=run(a.country,a.apply,a.venues,a.new_events)
+ p.add_argument('--venues',type=int,default=100);p.add_argument('--new-events',type=int,default=50);p.add_argument('--profile-venues',type=int,default=3);a=p.parse_args()
+ if not 1<=a.venues<=200 or not 0<=a.new_events<=100 or not 1<=a.profile_venues<=25000:raise ValueError('Stage budget exceeded')
+ result=run(a.country,a.apply,a.venues,a.new_events,a.profile_venues)
  if result.get('blocked'):raise SystemExit(2)
 if __name__=='__main__':main()
