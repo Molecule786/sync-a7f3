@@ -1,0 +1,89 @@
+name: Mindbody studios and scheduled classes
+on:
+  schedule:
+    - cron: '37 20 * * *'
+  workflow_dispatch:
+    inputs:
+      country:
+        description: 'Two-letter country code or all for top 40 GDP scope'
+        default: US
+        type: string
+      mode:
+        type: choice
+        options: [preview, production]
+        default: preview
+      venues:
+        description: 'Maximum rotating existing studios per country (1..200)'
+        default: '3'
+        type: string
+      new_events:
+        description: 'Maximum new classes per country (0..100)'
+        default: '10'
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: mindbody-production-writer
+  cancel-in-progress: false
+jobs:
+  plan:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      countries: ${{ steps.scope.outputs.countries }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - id: scope
+        env:
+          COUNTRY: ${{ inputs.country || 'all' }}
+        run: |
+          python - <<'PY'
+          import os,json
+          countries='US CN DE JP GB IN FR RU IT BR CA KR MX AU ES TR ID NL SA CH PL TW BE AR IL SE IE SG AE NO AT TH CO MY VN BD PH DK ZA RO'.split()
+          selected=os.environ['COUNTRY'].strip().upper()
+          if selected!='ALL' and selected not in countries:raise ValueError('Country outside top-40 scope')
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:f.write('countries='+json.dumps(countries if selected=='ALL' else [selected])+'\n')
+          PY
+  sync:
+    needs: plan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        country: ${{ fromJSON(needs.plan.outputs.countries) }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python -m unittest test_mindbody -v
+      - name: Verify public studio profiles and next seven days of classes
+        env:
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          COUNTRY: ${{ matrix.country }}
+          APPLY: ${{ github.event_name == 'schedule' || inputs.mode == 'production' }}
+          VENUES: ${{ inputs.venues || '100' }}
+          NEW_EVENTS: ${{ inputs.new_events || '50' }}
+        run: |
+          args=()
+          if [ "$APPLY" = "true" ]; then args+=(--apply); fi
+          python mindbody_sync.py --country "$COUNTRY" --venues "$VENUES" --new-events "$NEW_EVENTS" "${args[@]}"
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: mindbody-${{ matrix.country }}-summary
+          path: output/mindbody-*-summary.json
+          retention-days: 7
+          overwrite: true
+          if-no-files-found: ignore
