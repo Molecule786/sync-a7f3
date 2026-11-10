@@ -8,7 +8,7 @@ READ={'events','classpass_event_freshness','classpass_market_events','classpass_
 WRITE={'rpc/refresh_existing_directory_event','rpc/purge_approved_expired_events','rpc/existing_event_refresh_candidates'}
 READ.update({'venues_global_test','events_global_test','directory_jobs_global_test'})
 READ.add('venues')
-WRITE.update({'rpc/sync_mindbody_record','rpc/save_mindbody_checkpoint'})
+WRITE.update({'rpc/sync_mindbody_record','rpc/save_mindbody_checkpoint','rpc/sync_mindbody_venues'})
 WRITE.update({'rpc/directory_retention_cache_state','rpc/prune_directory_retention_cache',
               'rpc/purge_source_confirmed_expired_events'})
 
