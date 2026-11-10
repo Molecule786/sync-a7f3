@@ -151,12 +151,13 @@ def run(country,apply,limit,new_events):
    if apply:db('rpc/save_mindbody_checkpoint','POST',dict(p_country=country,p_stats={'cursor':last,'last_venue_verified_at':proof['verified_at']}))
   except Exception as e:
    stats['gaps'].append(seed['venue_id']+': '+str(e)[:160])
+   stats['blocked']=True
    # Do not advance past an access/database failure; permit a later retry.
    break
  stats['cursor']=last;stats['public_requests']=client.calls
  if not venues:stats['gaps'].append('No stored seed venues; this country has not been exhaustively searched')
  elif len(selected)<len(venues):stats['gaps'].append('Rotating studio batch; not all stored studios checked today')
- stats['status']='partial' if stats['gaps'] else 'selected_studios_verified'
+ stats['status']='blocked' if stats.get('blocked') else 'partial' if stats['gaps'] else 'selected_studios_verified'
  (out/('mindbody-'+country+'-summary.json')).write_text(json.dumps(stats,indent=2),encoding='utf8')
  if os.environ.get('GITHUB_STEP_SUMMARY'):
   with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as f:f.write('### Mindbody '+country+'\n```json\n'+json.dumps(stats,indent=2)+'\n```\n')
@@ -167,5 +168,6 @@ def main():
  p=argparse.ArgumentParser();p.add_argument('--country',choices=COUNTRIES,required=True);p.add_argument('--apply',action='store_true')
  p.add_argument('--venues',type=int,default=100);p.add_argument('--new-events',type=int,default=50);a=p.parse_args()
  if not 1<=a.venues<=200 or not 0<=a.new_events<=100:raise ValueError('Stage budget exceeded')
- run(a.country,a.apply,a.venues,a.new_events)
+ result=run(a.country,a.apply,a.venues,a.new_events)
+ if result.get('blocked'):raise SystemExit(2)
 if __name__=='__main__':main()
