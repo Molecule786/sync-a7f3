@@ -1,5 +1,7 @@
 name: Verified expired event retention
 on:
+  schedule:
+    - cron: '13 1 * * *' # Daily retention starts at 06:13 Pakistan time.
   workflow_dispatch:
 permissions:
   contents: read
