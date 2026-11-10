@@ -1,3 +1,7 @@
+## Mindbody added — 10 November 2026
+
+Mindbody studios and scheduled classes now have a separate daily workflow at 20:37 UTC (01:37 Pakistan). The rollout rotates up to 100 studios per country, adds at most 50 new classes and 10 new studios per country per run, and reports coverage gaps. This is staged coverage, not a daily verification of every studio. See [MINDBODY.md](MINDBODY.md) for preservation rules, storage limits and manual controls. No new tables or columns were added. Mindbody deletion is not enabled.
+
 Current operation (2026-11-10): verified expiry retention starts daily at 01:13 UTC (06:13 Pakistan time). It backs up before clearing stale temporary data and deleting exact-source-confirmed events ended more than 24 hours ago. Unverified, rescheduled and concurrently edited rows are retained. The full ClassPass top-40 reconciliation follows successful retention automatically. One retry at 10:13 UTC (15:13 Pakistan time) resumes recent unfinished retryable ClassPass routes. The 400 MiB collection guard remains. ACTIVE refreshes daily at 04:43 UTC; OpenSports refreshes every six hours at minute 17. Encrypted recovery artifacts are retained seven days; the recovery key stays local. These cloud jobs run with the computer off. Historical pilot sections below are reference only.
 
 # FitGlobe ClassPass daily US sync â€” staged rollout
