@@ -24,6 +24,10 @@ class MindbodyTests(unittest.TestCase):
   with self.assertRaises(ValueError):session_row(self.item,self.loc,self.now)
  def test_unknown_cancellation_not_assumed_active(self):
   del self.item['attributes']['attributes']['isCancelled'];self.assertIsNone(session_row(self.item,self.loc,self.now))
+ def test_confirmed_cancellation_updates_existing_only(self):
+  self.item['attributes']['attributes']['isCancelled']=True
+  self.assertIsNone(session_row(self.item,self.loc,self.now))
+  self.assertEqual(session_row(self.item,self.loc,self.now,{'mindbody:22462:1:31418'})[1]['registration_status'],'Cancelled')
  def test_intro_price_never_regular_price(self):
   a=self.item['attributes']['attributes'];a['purchaseOption']={'isSingleSession':True,'isIntroOffer':True,'pricing':{'online':'17.50'}}
   self.assertNotIn('price',session_row(self.item,self.loc,self.now)[1]);a['purchaseOption']['isIntroOffer']=False
