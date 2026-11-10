@@ -1,7 +1,9 @@
 name: ClassPass precise live refresh - top 40 GDP
 on:
+  workflow_run:
+    workflows: ['Verified expired event retention']
+    types: [completed]
   schedule:
-    - cron: '13 4 * * *' # Daily full refresh: 09:13 Pakistan time.
     - cron: '13 10 * * *' # One bounded retry: 15:13 Pakistan time.
   workflow_dispatch:
     inputs:
@@ -17,6 +19,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   plan:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     outputs:
