@@ -1,0 +1,123 @@
+name: Verified expired event retention
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: classpass-production-writer
+  cancel-in-progress: false
+jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    outputs:
+      shards: ${{ steps.plan.outputs.shards }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements-event-refresh.txt
+      - run: python -m unittest test_retention
+      - name: Back up temporary cache and checkpoints
+        env:
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: python retention.py cache_backup
+      - uses: actions/upload-artifact@v6
+        with:
+          name: retention-encrypted-cache-backup
+          path: output/retention/cache/encrypted/
+          retention-days: 7
+          if-no-files-found: error
+      - name: Release stale temporary storage while retaining checkpoint metadata
+        env:
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: python retention.py cache_purge
+      - id: plan
+        env:
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: python retention.py plan
+      - uses: actions/upload-artifact@v6
+        with:
+          name: retention-manifest
+          path: output/retention/manifest.json
+          retention-days: 7
+  clean:
+    needs: prepare
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        shard: ${{ fromJSON(needs.prepare.outputs.shards) }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements-event-refresh.txt
+      - uses: actions/download-artifact@v6
+        with:
+          name: retention-manifest
+          path: output/retention
+      - name: Recheck exact source identities and expiry with 24-hour grace
+        env:
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          SHARD: ${{ matrix.shard }}
+        run: python retention.py verify --shard "$SHARD"
+      - uses: actions/upload-artifact@v6
+        with:
+          name: retention-encrypted-backup-${{ matrix.shard }}
+          path: output/retention/${{ matrix.shard }}/encrypted/
+          retention-days: 7
+          if-no-files-found: error
+      - name: Remove only verified expired rows that still match the uploaded backup
+        env:
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          SHARD: ${{ matrix.shard }}
+        run: python retention.py purge --shard "$SHARD"
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: retention-result-${{ matrix.shard }}
+          path: output/retention/${{ matrix.shard }}/summary.json
+          retention-days: 7
+          if-no-files-found: ignore
+  report:
+    needs: [prepare,clean]
+    if: ${{ always() && needs.prepare.result == 'success' }}
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@v6
+        with:
+          pattern: retention-result-*
+          path: results
+      - name: Report actual deletions and retained gaps
+        env:
+          EXPECTED_SHARDS: ${{ needs.prepare.outputs.shards }}
+        shell: python
+        run: |
+          import json,os
+          from collections import Counter
+          from pathlib import Path
+          counts=Counter();purged=Counter();received=[]
+          for p in Path('results').glob('*/summary.json'):
+              r=json.loads(p.read_text());received.append(r['shard'])
+              counts.update(r.get('counts',{}));purged.update(r.get('purge',{}))
+          missing=sorted(set(json.loads(os.environ['EXPECTED_SHARDS']))-set(received))
+          result={'verification':dict(counts),'purge':dict(purged),'missing_shards':missing,
+                  'policy':'24-hour grace; fresh exact-source confirmation; unchanged-row comparison; encrypted backup before purge; failures retained'}
+          Path('retention-summary.json').write_text(json.dumps(result,indent=2))
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as f:f.write('```json\n'+json.dumps(result,indent=2)+'\n```\n')
+          if missing:raise SystemExit('Missing cleanup results: retained gaps require inspection')
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: retention-summary
+          path: retention-summary.json
+          retention-days: 7
