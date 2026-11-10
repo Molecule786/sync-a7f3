@@ -151,6 +151,12 @@ def run(country,apply,limit,new_events):
    if apply:db('rpc/save_mindbody_checkpoint','POST',dict(p_country=country,p_stats={'cursor':last,'last_venue_verified_at':proof['verified_at']}))
   except Exception as e:
    stats['gaps'].append(seed['venue_id']+': '+str(e)[:160])
+   if isinstance(e,ValueError):
+    # One unavailable/malformed studio must not permanently block a country.
+    # Keep its gap explicit and revisit it on the next full rotation.
+    last=seed['venue_id'];stats['unverified_venues']=stats.get('unverified_venues',0)+1
+    if apply:db('rpc/save_mindbody_checkpoint','POST',dict(p_country=country,p_stats={'cursor':last,'unverified_venue':last}))
+    continue
    stats['blocked']=True
    # Do not advance past an access/database failure; permit a later retry.
    break
@@ -158,6 +164,7 @@ def run(country,apply,limit,new_events):
  if not venues:stats['gaps'].append('No stored seed venues; this country has not been exhaustively searched')
  elif len(selected)<len(venues):stats['gaps'].append('Rotating studio batch; not all stored studios checked today')
  stats['status']='blocked' if stats.get('blocked') else 'partial' if stats['gaps'] else 'selected_studios_verified'
+ if apply and last:db('rpc/save_mindbody_checkpoint','POST',dict(p_country=country,p_stats=stats))
  (out/('mindbody-'+country+'-summary.json')).write_text(json.dumps(stats,indent=2),encoding='utf8')
  if os.environ.get('GITHUB_STEP_SUMMARY'):
   with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as f:f.write('### Mindbody '+country+'\n```json\n'+json.dumps(stats,indent=2)+'\n```\n')
