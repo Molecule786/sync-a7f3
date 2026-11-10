@@ -111,6 +111,7 @@ def run(country,apply,limit,new_events,profile_limit=3):
  priority=[v for v in venues if v.get('url') in priority_urls]
  selected=(priority+[v for v in selected if v.get('url') not in priority_urls])[:max(limit,len(priority))]
  selected=selected[:200]
+ discovery_target=next((v['venue_id'] for v in selected if v.get('url') not in priority_urls),selected[0]['venue_id'] if selected else None)
  stats['existing_events']=len(existing);last=cursor or 'mindbody:0'
  profile_cursor=saved.get('profile_cursor','');stats['profile_cursor']=profile_cursor
  profile_order=([v for v in venues if v['venue_id']>profile_cursor]+[v for v in venues if v['venue_id']<=profile_cursor])[:profile_limit]
@@ -130,7 +131,10 @@ def run(country,apply,limit,new_events,profile_limit=3):
     identity=old['venue_id'];loc=by_id.get(identity)
     if not loc or loc['attributes'].get('countryCode')!=country or 'Fitness' not in loc['attributes'].get('categoryTypes',[]):
      stats['unverified_profiles']=stats.get('unverified_profiles',0)+1;continue
-    items.append({'identity':identity,'patch':venue_patch(loc),'expected':old,'evidence':{'verified_at':verified_at,'location_id':str(loc['id']),'country':country}})
+    try:patch=venue_patch(loc)
+    except (KeyError,ValueError,TypeError):
+     stats['unverified_profiles']=stats.get('unverified_profiles',0)+1;continue
+    items.append({'identity':identity,'patch':patch,'expected':old,'evidence':{'verified_at':verified_at,'location_id':str(loc['id']),'country':country}})
     if any(v['venue_id']==identity for v in selected):location_cache[identity]=loc
    results=db('rpc/sync_mindbody_venues','POST',{'p_items':items}) if apply and items else [{'action':'preview','identity':x['identity']} for x in items]
    for result in results:
@@ -173,7 +177,7 @@ def run(country,apply,limit,new_events,profile_limit=3):
     if eid not in existing:existing[eid]=dict(patch,event_id=eid) # Duplicate response protection; reread before further changes.
    stats['venues_checked']+=1;last=seed['venue_id']
    # Bounded new studio discovery around the rotating first verified seed.
-   if stats['venues_checked']==1:
+   if seed['venue_id']==discovery_target:
     vp=venue_patch(loc)
     nearby=client.post('search/locations',{'page':{'size':100,'number':1},'sort':'distance',
        'filter':{'latitude':vp['lat'],'longitude':vp['lon'],'radius':25000,'categoryTypes':['Fitness']}})
