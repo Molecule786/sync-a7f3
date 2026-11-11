@@ -59,7 +59,7 @@ class MindbodyTests(unittest.TestCase):
    if resource=='rpc/sync_mindbody_venues':
     writes.extend(payload['p_items']);return [{'identity':x['identity'],'action':'unchanged'} for x in payload['p_items']]
    return {'saved':True}
-  with tempfile.TemporaryDirectory() as tmp,patch('mindbody_sync.ROOT',Path(tmp)),patch('mindbody_sync.rows',side_effect=lambda r,p:studios if r=='venues' else []),patch('mindbody_sync.db',side_effect=database),patch('mindbody_sync.PublicClient') as factory:
+  with tempfile.TemporaryDirectory() as tmp,patch('mindbody_sync.ROOT',Path(tmp)),patch.dict('mindbody_sync.os.environ',{'GITHUB_STEP_SUMMARY':''}),patch('builtins.print'),patch('mindbody_sync.rows',side_effect=lambda r,p:studios if r=='venues' else []),patch('mindbody_sync.db',side_effect=database),patch('mindbody_sync.PublicClient') as factory:
    client=factory.return_value;client.calls=2
    client.post.side_effect=lambda path,payload:{'data':[bad,good] if path=='search/locations' else []}
    client.location.return_value=bad
