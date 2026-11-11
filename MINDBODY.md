@@ -20,4 +20,9 @@ Classes require explicit timezone-bearing times, exact studio/site/location iden
 
 ## Verification
 
-`python -m unittest test_mindbody test_event_refresh test_retention -q` passes 20 focused tests. `verify_mindbody.sql` checks protected fields, studio content locks, stable insert/replay and concurrent edit protection inside a rolled-back transaction. Production writes must additionally be checked in the workflow summary and directly in Supabase.
+`python -m unittest test_mindbody test_event_refresh test_retention -q` passes 23 focused tests. `verify_mindbody.sql` checks protected fields, studio content locks, stable insert/replay and concurrent edit protection inside a rolled-back transaction. Production writes must additionally be checked in the workflow summary and directly in Supabase.
+
+
+## Missing-category correction — 11 November 2026
+
+Null, missing or malformed category lists are unverified in bulk profile refresh, individual studio checks and nearby discovery. Such studios remain unchanged and other studios continue processing. Null image galleries are accepted as unavailable image data. A pipeline regression test verifies that a null-category studio is not written and the next valid studio processes successfully. Country selection also accepts comma-separated codes for a single targeted recovery run; the daily top-40 schedule and storage limits remain unchanged.
