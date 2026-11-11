@@ -23,6 +23,12 @@ def slug(s):
 def clean(p):
  return {k:v for k,v in p.items() if v is not None and v!='' and v!=[]}
 
+def is_fitness_location(location,country):
+ # A missing/null category is unverified, not an empty iterable or permission to write.
+ a=location.get('attributes') or {}
+ categories=a.get('categoryTypes')
+ return a.get('countryCode')==country and isinstance(categories,list) and 'Fitness' in categories
+
 class PublicClient:
  def __init__(self):self.calls=0;self.session=requests.Session(impersonate='chrome')
  def post(self,path,payload):
@@ -48,7 +54,7 @@ def venue_patch(location):
  return clean(dict(name=a.get('name'),description=a.get('description') or a.get('locationDescription'),
   street=' '.join(filter(None,[a.get('address'),a.get('address2')])),zip=a.get('postalCode'),city=a.get('city'),
   region=a.get('state'),country=a.get('countryCode'),lat=lat,lon=lon,phone=a.get('phone'),
-  logo_url=a.get('logo'),image_url=next((i['url'] for i in a.get('galleryImages',[]) if i.get('url')),None) or a.get('stockImage'),
+  logo_url=a.get('logo'),image_url=next((i['url'] for i in (a.get('galleryImages') or []) if i.get('url')),None) or a.get('stockImage'),
   amenities=a.get('amenities'),activities=a.get('categories'),
   url='https://www.mindbodyonline.com/explore/locations/'+a['slug']))
 
@@ -131,7 +137,7 @@ def run(country,apply,limit,new_events,profile_limit=3):
    by_id={'mindbody:'+str(v['id']):v for v in found};items=[];verified_at=datetime.now(timezone.utc).isoformat()
    for old in batch:
     identity=old['venue_id'];loc=by_id.get(identity)
-    if not loc or loc['attributes'].get('countryCode')!=country or 'Fitness' not in loc['attributes'].get('categoryTypes',[]):
+    if not loc or not is_fitness_location(loc,country):
      stats['unverified_profiles']=stats.get('unverified_profiles',0)+1;continue
     try:patch=venue_patch(loc)
     except (KeyError,ValueError,TypeError):
@@ -160,7 +166,7 @@ def run(country,apply,limit,new_events,profile_limit=3):
   if time.monotonic()-started>720:stats['gaps'].append('Runtime budget; remaining venues resume next run');break
   try:
    loc=location_cache.get(seed['venue_id']) or client.location(seed['url'],seed['venue_id']);a=loc['attributes']
-   if a.get('countryCode')!=country or 'Fitness' not in a.get('categoryTypes',[]):raise ValueError('Country/category no longer verified')
+   if not is_fitness_location(loc,country):raise ValueError('Country/category no longer verified')
    proof={'verified_at':datetime.now(timezone.utc).isoformat(),'location_id':str(loc['id']),'country':country}
    if seed['venue_id'] not in profile_verified:record('venue',seed['venue_id'],venue_patch(loc),seed,proof)
    now=datetime.now(timezone.utc)
@@ -186,7 +192,7 @@ def run(country,apply,limit,new_events,profile_limit=3):
     known={v['venue_id'] for v in venues};new_count=0
     for found in nearby['data']:
      fa=found.get('attributes',{});identity='mindbody:'+str(found['id'])
-     if identity in known or fa.get('countryCode')!=country or 'Fitness' not in fa.get('categoryTypes',[]):continue
+     if identity in known or not is_fitness_location(found,country):continue
      if new_count>=10:break
      record('venue',identity,venue_patch(found),None,{'verified_at':datetime.now(timezone.utc).isoformat(),'location_id':str(found['id']),'country':country})
      known.add(identity);new_count+=1
