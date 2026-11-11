@@ -4,7 +4,7 @@ create or replace function public.directory_retention_cache_state()
 returns jsonb language sql stable security invoker set search_path='' as $$
  select jsonb_build_object(
  'profiles',(select count(*) from public.venues_global_test),
- 'fresh_profiles',(select count(*) from public.venues_global_test where observed_at>=now()-interval '20 hours'),
+ 'fresh_profiles',(select count(*) from public.venues_global_test where observed_at>=now()-interval '72 hours'),
  'test_events',(select count(*) from public.events_global_test),
  'profile_hash',(select md5(coalesce(string_agg(md5(to_jsonb(v)::text),'' order by id),'')) from public.venues_global_test v),
  'jobs_hash',(select md5(coalesce(string_agg(md5(to_jsonb(j)::text),'' order by source,market_id),'')) from public.directory_jobs_global_test j));
@@ -21,7 +21,7 @@ begin
  if (state->>'test_events')::integer=0 and
     (state->>'profiles')::integer>(state->>'fresh_profiles')::integer then
   create temporary table retention_profiles_copy on commit drop as
-   select * from public.venues_global_test where observed_at>=now()-interval '20 hours';
+   select * from public.venues_global_test where observed_at>=now()-interval '72 hours';
   profiles:=(state->>'profiles')::integer-(select count(*) from pg_temp.retention_profiles_copy);
   truncate table public.events_global_test,public.venues_global_test;
   insert into public.venues_global_test select * from pg_temp.retention_profiles_copy;

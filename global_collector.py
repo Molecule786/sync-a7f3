@@ -93,6 +93,7 @@ def collect(market, markets, root, max_requests=150, profile_loader=None):
     generation = root/state['generation']
     generation.mkdir(parents=True, exist_ok=True)
     client = PublicClient(max_requests=max_requests)
+    profile_cache_hits = profile_source_requests = 0
     retry_at = state.get('retry_not_before')
     if retry_at and now < datetime.fromisoformat(retry_at):
         return {'status':'cooldown', 'retry_not_before':retry_at, 'market_id':market['id']}
@@ -152,10 +153,12 @@ def collect(market, markets, root, max_requests=150, profile_loader=None):
             # Cache full studio profiles individually; avoid one ever-growing enrichment blob.
             profiles = {}
             known_countries=state.setdefault('venue_countries',{})
-            if profile_loader:
-                for studio in profile_loader(ids):
+            missing_profiles = [i for i in ids if not (generation/'venues'/f'{i}.json.gz').exists()]
+            if profile_loader and missing_profiles:
+                for studio in profile_loader(missing_profiles):
                     if studio.get('studio_id') in ids and studio.get('raw_profile'):
                         write_gzip(generation/'venues'/f"{studio['studio_id']}.json.gz", studio)
+                        profile_cache_hits += 1
             for identity in ids:
                 if str(identity) in known_countries and known_countries[str(identity)] != ISO2[market['country_code']]:
                     continue
@@ -163,6 +166,7 @@ def collect(market, markets, root, max_requests=150, profile_loader=None):
                 if path.exists():
                     profile = json.loads(gzip.decompress(path.read_bytes()))['raw_profile']
                 else:
+                    profile_source_requests += 1
                     profile = client.json('GET', f'/_api/v2/venues/{identity}')
                     if profile.get('id') != identity:
                         raise CollectionError('Studio profile identity mismatch')
@@ -230,6 +234,7 @@ def collect(market, markets, root, max_requests=150, profile_loader=None):
     summary.update(market=market['name'], venues_discovered=len(state['venues']),
                    completed_tasks=len(state['tasks']), verified_rows=sum(t['rows'] for t in state['tasks'].values()),
                    requests=client.count, database_writes=0,
+                   profile_cache_hits=profile_cache_hits, profile_source_requests=profile_source_requests,
                    coverage='Published market footprint only; not proof of entire-country or worldwide completion')
     save(root/'summary.json',summary)
     return summary
