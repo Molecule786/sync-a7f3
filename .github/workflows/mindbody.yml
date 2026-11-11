@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       country:
-        description: 'Two-letter country code or all for top 40 GDP scope'
+        description: 'Two-letter country codes separated by commas, or all for top 40 GDP scope'
         default: US
         type: string
       mode:
@@ -50,8 +50,9 @@ jobs:
           import os,json
           countries='US CN DE JP GB IN FR RU IT BR CA KR MX AU ES TR ID NL SA CH PL TW BE AR IL SE IE SG AE NO AT TH CO MY VN BD PH DK ZA RO'.split()
           selected=os.environ['COUNTRY'].strip().upper()
-          if selected!='ALL' and selected not in countries:raise ValueError('Country outside top-40 scope')
-          with open(os.environ['GITHUB_OUTPUT'],'a') as f:f.write('countries='+json.dumps(countries if selected=='ALL' else [selected])+'\n')
+          requested=countries if selected=='ALL' else list(dict.fromkeys(c.strip() for c in selected.split(',')))
+          if not requested or any(c not in countries for c in requested):raise ValueError('Country outside top-40 scope')
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:f.write('countries='+json.dumps(requested)+'\n')
           PY
   sync:
     needs: plan
